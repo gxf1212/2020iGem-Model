@@ -1,0 +1,68 @@
+\documentclass[UTF8,12pt,a4paper,doc,natbib,apacite]{apa6}
+%\documentclass[UTF8,a4paper,12pt]{article}
+%\usepackage[top=2.54cm,bottom=2.54cm,left=2.8cm,right=2.8cm]{geometry}
+
+%% 设置
+\input{./template/settings.tex}
+\usepackage{setspace}%调行距
+\linespread{1}
+\usepackage{indentfirst} 
+\hyphenpenalty=100
+\tolerance=100000
+
+\usepackage{graphicx}
+\usepackage{natbib} % bib格式
+
+\newcommand{\citeauthoryearpage}[1]{(\citeauthor{#1},\ \citeyear{#1},\ p.\ citenum{#1})}
+
+\graphicspath{{pics/}}
+
+%% 信息
+\title{Wiki-Model}
+\author{Xufan Gao}
+\date{\today}
+
+
+\begin{document}
+% 粗稿就行，估计tex不能直接转成想要的html，再问郭骐瑞吧
+\maketitle
+
+As the literature indicated, bacteria and cyanobacteria are living together in the soil, both known as crucial microorganisms during the development of biological soil crust. Bacteria secrete organic acids and powerful exoenzymes that dissolve inorganic/organic nitrogen and phosphorus for cyanobacteria to use; they also make many other essential compounds like vitamins accessible. On the other side, *Nostoc sp.* and even more cyanobacteria can fix CO2 and N2 from the air, thus offering organic matter and extra nitrogen as fundamental needs for bacteria \citep{Chen2020}.  **Such a mutualism is the central relationship between them that determines their survival in the soil**. In some sense, they are interdependent in the nutrition-lacking soil. Although some cyanobacteria and *Bacillus* in lakes may create toxins to repress the growth of each other, many studies have proved that *Nostoc sp.* and *Bacillus subtilis* do coexist in the soil and cooperate to make sandy soil a suitable environment for lives. 参考文献
+
+
+
+
+
+
+
+\section{\RNum{4}. Conclusion}
+novel issues for academic integrity. Things are getting more complicated. It might be long before we find the answer.
+
+Here is some advice for the future:
+
+\begin{itemize}
+	\item \textbf{Deal with related plagiarism fundamentally}
+	
+	Teachers should firstly take measures to reduce academic misconduct. \cite{3} 
+	
+	\item \textbf{Develop effective plagiarism detectors}
+	
+	Because people always has motivators for cheating, 
+	
+	\item \textbf{Properly use AI}
+	
+	Additionally, \cite{5} argues that people should think about ethical issues as soon as possible. Applied sciences has been exploding in the past decades. Technology does not possibly decline.  
+
+\end{itemize}
+
+%Last name, FM. (Year published). Title of Paper or Proceedings, Title of Conference, Location, Date. Place of publication: Publisher.
+
+\renewcommand{\refname}{\bfseries REFERENCES}
+
+
+%使用bib文件
+\bibliographystyle{plainnat}
+\bibliography{./iGem}
+%\footnote{I cited some websites, whose format is slightly different from that of articles and conference papers.}
+
+\end{document}
