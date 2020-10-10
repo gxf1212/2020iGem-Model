@@ -93,7 +93,7 @@ rc=7.2e-3;rn=2.6e-4;rp=8.88e-7;rho=1.426e3;
 % rc=2.35e-2;rn=2.8e-4;rp=3.676e-6;rho=1.446e3;
 
 % rc=rc/1.724; % I forget why?
-rn=rn*0.05; % avalible N (inorganic and low-molecular-weight organic)
+% rn=rn*0.05; % avalible N (inorganic and low-molecular-weight organic)
 % rp = rp / 0.06  % just use soluble P
 
 % rho: soil mass / volume in natural state. unit: g/L

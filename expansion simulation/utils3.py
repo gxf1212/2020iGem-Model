@@ -74,6 +74,9 @@ def find_neighbors(idx_pair, n, grid="rect_Moore"):
 
 def reverse_neighbor_value(idx_pair, nei, state_init):
     """
+    it's wrong!
+    diff.append(np.array([reverse_neighbor_value(idx_pair, nei, state_init[i]) + state_init[i][nei]
+                    - 2 * state_init[i][idx_pair] for nei in neighbors], dtype='float64'))
     :param: state_init: of a particular element!
     :return: the number in reverse neighbor. if out of border, return 0
     just find the symmetry point
@@ -90,14 +93,14 @@ def reverse_neighbor_value(idx_pair, nei, state_init):
 
 
 # %% initialization methods
-def init_classic_center(n: int, num=(100, 200), dtype='uint16'):
+def init_classic_center(n: int, num=(100, 200, 100, 100), dtype='uint16'):
     # create initial distribution by putting some bacteria in the center
     # only "active" cell
     # B.S and Nostoc, respectively
     state0 = np.zeros((ELE, n, n), dtype=dtype)
-    n0, n2 = num
-    state0[0, int(n / 2), int(n / 2)] = n0
-    state0[2, int(n / 2), int(n / 2)] = n2
+    idx = [0, 2, 4, 5]
+    for i in idx:
+        state0[i, int(n / 2), int(n / 2)] = num[idx.index(i)]
 
     return state0
 
@@ -127,36 +130,39 @@ def normalize(x):
     return result
 
 
-def calcu_diff(states_init, idx_pair, neighbors, grid):
+def calcu_diff(state_init, idx_pair, neighbors, grid):
     """
-    :param states_init: always the same in one epoch
+    :param state_init: always the same in one epoch
     :param grid: for rectangular grid: Moore (8) or Neumann (4); or hexagonal (6)
     :return: the local 2nd derivative of BS, NO, EPS, nutrient
-    TODO: we calculate only active cells as biomass. spores? different biomass
-    TODO: may be changed, using random variables. now we round off the numbers
+    spores are ignored because we ignore water flux
+    nutrient != all molecules, but can be controlled by probability
     """
     var_idx = [0, 2, 4, 5]  # for BS, NO, EPS, nutrient
     diff = []
     for i in var_idx:  # equal to original [0,2,4,5]
         # get differences in neighbors' order. convert to float in case of negative numbers and following calculation
-        diff.append(np.array([reverse_neighbor_value(idx_pair, nei, states_init[i]) + states_init[i][nei]
-                    - 2 * states_init[i][idx_pair] for nei in neighbors], dtype='float64'))
+        diff.append(np.array([state_init[i][idx_pair] - state_init[i][nei] for nei in neighbors], dtype='float64'))
     return np.array(diff)  # a row vector for each variable, shape = (len(var_idx), len(neighbors))
 
 
 # %% for version 3
-def calcu_number_mig(diff, weight, probs_migration, dtype):
+def calcu_num_migration(diff, weight, probs_migration, dtype):
     """
+    calculate number of cell migration. cps is calculated in function "update_number_mig"
+    TODO: if we decide to ignore water flux, those commented statements will be deleted in this function and update
     :param diff: 2nd derivative. 0~3 for BS, NO, EPS, nutrient. see calcu_diff
     :param weight: 2 tuples (each len=3). weight for BS, No, EPS and nutrient.
     set according to the degree of impact. EPS and nutrient are not spreading by itself
-    :param probs_migration: list. len=4.
+    :param probs_migration: list. len=4. [2,3] is now unused
     migration probabilities, actually diffusion coefficient of BS, No, EPS and nutrient
     :param dtype: we must control dtype here
     :return: diffusion coefficient * 2nd derivatives * normalized weights
     due to 2nd derivative assumption, we are not multiplying states[(i, 2), x, y].reshape(2, 1)
-    we add because bacteria both move themselves and take away by water (agar swelling?) at the same time
+    we add because bacteria both move themselves and take away by osmotic pressure & swelling at the same time
     weights contain info on both the importance and unit unification between EPS and bacteria
+    after adding all mechanisms, we just use the positive term, because num_migration in opposite
+    direction are opposite numbers
    """
     num_migration = np.zeros(shape=diff.shape, dtype=dtype)
     for i in [0, 1]:  # BS, No, a row for all neighbors
@@ -165,6 +171,7 @@ def calcu_number_mig(diff, weight, probs_migration, dtype):
         num_migration[i, :] = np.sum(temp, axis=0).round()
     # for i in [2, 3]:
     #     num_migration[i, :] = probs_migration[i] * diff[i, :]
+    num_migration = np.maximum(num_migration, 0)  # discard negative terms
 
     return num_migration
 
@@ -174,21 +181,22 @@ def update_number_mig(state_update, idx_pair, neighbors, num_migration, ratio_cp
     update population numbers (only once for a certain parallelogram)
     CPS will be taken away by microorganism but nutrient won't
     :param ratio_cps: how much units of CPS a BS/No can take away (or, how much a cell contains)
-    TODO: check if <0
     """
+    # idx = [0,2,4,5]
+    idx = [0, 2]
+    # update the neighbors
     for nei in neighbors:
-        state_update[0][nei] += num_migration[0, neighbors.index(nei)]
-        state_update[2][nei] += num_migration[1, neighbors.index(nei)]
-        # state_update[4][nei] += num_migration[2, neighbors.index(nei)]
-        # state_update[5][nei] += num_migration[3, neighbors.index(nei)]
+        # cell migration
+        for i in idx:
+            # in case num_mig > num_center. directly change the values in this array
+            num_migration[idx.index(i), neighbors.index(nei)] = np.minimum(state_update[i][idx_pair], num_migration[idx.index(i), neighbors.index(nei)])
+            state_update[i][nei] += num_migration[idx.index(i), neighbors.index(nei)]
+            state_update[i][idx_pair] -= num_migration[idx.index(i), neighbors.index(nei)]
 
-    state_update[0][idx_pair] -= np.sum(num_migration[0, :])
-    state_update[2][idx_pair] -= np.sum(num_migration[1, :])
-    # state_update[4][idx_pair] -= np.sum(num_migration[2, :])
-    # state_update[5][idx_pair] -= np.sum(num_migration[3, :])
+        # calculate cps migration, using modified num_migration
+        for i in [0, 1]:
+            state_update[4][nei] += num_migration[i, neighbors.index(nei)] * ratio_cps[i]
 
-    for i in [0, 1]:
-        state_update[4][nei] += num_migration[i, neighbors.index(nei)] * ratio_cps[i]
     return state_update
 
 
@@ -205,14 +213,15 @@ def update_mig(idx_pairs, n, state_update, state_init, grid,
     :return: new state (t+1/2 in the paper)
     based on diffusion equation, where particles move according to gradient
     we just consider the difference between the center and its neighbors to determine the 2nd derivative
+    TODO: may be changed, using random variables. now we round off the numbers
+    before doing so, it should all be isotropic
     """
-
     for idx_pair in idx_pairs:
         neighbors = find_neighbors(idx_pair, n, grid)  # find neighbors
-        # if states[0][idx_pair] != 0:  # for debugging, find where there are bacteria
-        #     print("not empty")
+        if state_init[0][idx_pair] != 0:  # for debugging, find where there are bacteria
+            print("not empty")
         diff = calcu_diff(state_init, idx_pair, neighbors, grid)
-        num_migration = calcu_number_mig(diff, weight, probs_migration, dtype)
+        num_migration = calcu_num_migration(diff, weight, probs_migration, dtype)
         state_update = update_number_mig(state_update, idx_pair, neighbors, num_migration, ratio_cps)
 
     return state_update
@@ -345,6 +354,7 @@ def my_plot2d_animate(ca, idx=0, title='evolve', interval=50, my_cmap='Greys'):
 
 def my_plot2d(ca, timestep=None, title='', my_cmap='Greys', idx=0):
     cmap = plt.get_cmap(my_cmap)
+    fig = plt.figure(figsize=(9.6, 7.2))
     plt.title(title)
     if timestep is None:  # maybe the input is a single-time state
         data = ca[idx]

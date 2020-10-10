@@ -6,7 +6,9 @@ from utils3 import *
 
 global ELE
 dtype='int16'
-# %% parameters
+
+
+# %% simulation
 # fundamental parameters
 '''elements of a state (6 by n by n)
 0 for b of BS
@@ -16,20 +18,15 @@ dtype='int16'
 4 for nutrition
 5 for EPS content
 '''
-n = 50  # size
+n = 10  # size
+epoch = 7  # number of period
+probs_migration = [0.04, 0.04, 0.04, 0.04]
+weight = [[1, 1, 1], [1, 1, 1]]
 
-probs_migration = [0.1, 0.1, 0.1, 0.1]
-weight = [[1, 1, 2], [1, 1, 2]]
-
-epoch = 20  # number of period
-
-# %% 3-stage rule with single BS and no nutrition
 # the init_simple2d added a dimension to a state, which fits the original evolution function
 # put a state 2 cell in the center, but we can write our own
 # each time I run the simulation, state_init changed ????! have to put it here
-n = 10
-epoch = 4
-state_init = init_classic_center(n, num=(1000, 2000), dtype=dtype)
+state_init = init_classic_center(n, num=(1000, 2000, 1000, 1000), dtype=dtype)
 states_epoch, states_phase = stimulation_v3(n=n, state_init=state_init, grid='rect_Moore',
                                             epoch=epoch, see_phase=False,
                                             probs_migration=probs_migration, weight=weight,
@@ -43,16 +40,19 @@ states_epoch, states_phase = stimulation_v3(n=n, state_init=state_init, grid='re
 '''
 # %% result
 # a dynamic graph, repeat playing
-# my_plot2d_animate(states_epoch, idx=0, interval=600)  # each epoch costs "interval" millisecond
-my_plot2d_animate(states_epoch, idx=2, interval=600)
+idx = 0
+# my_plot2d_animate(states_epoch, idx=idx, interval=600)  # each epoch costs "interval" millisecond
+my_plot2d_animate(states_epoch, idx=idx, interval=600)
 
 
 # %%
 # for debugging purposes
 
+time = 2
+idx = 0
+my_plot2d(states_epoch, timestep=time, idx=idx)
+states_epoch[time]
 # my_plot2d(state_update, idx=0)
-my_plot2d(states_epoch, timestep=4, idx=0)
-states_epoch[2]
 # my_plot2d_animate(states_phase)  # dynamic graph by phase
 # my_plot2d(states_phase, timestep=2)
 
