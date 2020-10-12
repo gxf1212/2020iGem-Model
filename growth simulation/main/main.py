@@ -3,9 +3,10 @@
 import sys
 
 import pylab as pl
+import matplotlib.pyplot as plt
 from matplotlib.pyplot import plot, subplot, figure, legend, xlabel, ylabel, title
 
-sys.path.append(r'E:\\undergraduate_study\\study\\research&competition\\igem及合成生物学\\土壤改造\\建模\\各个话题\\生长模拟\\main')
+sys.path.append(r'E:\undergraduate_study\study\research&competition\igem及合成生物学\土壤改造\建模\2020iGem-Model\growth simulation\main')
 from utils import *
 # the project is defined in the folder 'growth stimulation',
 # we have to append the path 'main', and just ignore the error

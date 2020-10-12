@@ -19,17 +19,20 @@ dtype='int16'
 5 for EPS content
 '''
 n = 10  # size
-epoch = 7  # number of period
-probs_migration = [0.04, 0.04, 0.04, 0.04]
-weight = [[1, 1, 1], [1, 1, 1]]
+epoch = 18  # number of period. more causes NaN??
+probs_migration = [0.02, 0.02, 0.02, 0.02]  # diffusion coefficient
+weight = [[1, 1, 1], [1, 1, 1]]  # cell, EPS and nutrient on migration
+params_BS = (0.3, 0.03, 0.01, 1000)  # growth, to spores, nutrient consumption, carrying capacity
+params_No = (0.3, 0.03, 0.01, 1000)
 
 # the init_simple2d added a dimension to a state, which fits the original evolution function
 # put a state 2 cell in the center, but we can write our own
 # each time I run the simulation, state_init changed ????! have to put it here
-state_init = init_classic_center(n, num=(1000, 2000, 1000, 1000), dtype=dtype)
+state_init = init_classic_center(n, num=(1000, 1000, 1000, 1000), dtype=dtype)
 states_epoch, states_phase = stimulation_v3(n=n, state_init=state_init, grid='rect_Moore',
                                             epoch=epoch, see_phase=False,
                                             probs_migration=probs_migration, weight=weight,
+                                            params_BS=params_BS, params_No=params_No,
                                             dtype=dtype)
 # it is still hard to perform a large-scale simulation
 '''
@@ -40,7 +43,7 @@ states_epoch, states_phase = stimulation_v3(n=n, state_init=state_init, grid='re
 '''
 # %% result
 # a dynamic graph, repeat playing
-idx = 0
+idx = 2
 # my_plot2d_animate(states_epoch, idx=idx, interval=600)  # each epoch costs "interval" millisecond
 my_plot2d_animate(states_epoch, idx=idx, interval=600)
 
@@ -48,10 +51,11 @@ my_plot2d_animate(states_epoch, idx=idx, interval=600)
 # %%
 # for debugging purposes
 
-time = 2
-idx = 0
+time = 16
+idx = 2
 my_plot2d(states_epoch, timestep=time, idx=idx)
-states_epoch[time]
+# states_epoch[time]
+states_epoch[time][idx]
 # my_plot2d(state_update, idx=0)
 # my_plot2d_animate(states_phase)  # dynamic graph by phase
 # my_plot2d(states_phase, timestep=2)

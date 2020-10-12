@@ -1,4 +1,4 @@
-## try simple CA
+# try simple CA
 # we use rectangular grid
 # dtype='uint8'
 
@@ -27,7 +27,8 @@ trans_3 = (0, 0, 1)
 epoch = 20  # number of period
 
 # %% easy stimulation
-# states=stimulation_easy_rule(n, state_init, epoch=epoch)
+state_init = cpl.init_simple2d(n, n, val=2, dtype='uint8')
+states = stimulation_v1(n, state_init, epoch=epoch)
 
 # %% result
 # cpl.plot2d(states, timestep=1)  # visualize single timestep

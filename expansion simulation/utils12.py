@@ -58,7 +58,7 @@ def update_easy_single(state, idx_pair, n: int):
     return state_new, update
 
 
-def stimulation_easy_rule(n: int, state_init, epoch=20):
+def stimulation_v1(n: int, state_init, epoch=20):
     states = np.zeros(shape=(epoch + 1, n, n), dtype='uint8')
     states[0] = state_init
     for t in range(epoch):
