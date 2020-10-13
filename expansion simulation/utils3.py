@@ -1,11 +1,12 @@
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
 # we call the cell in CA "square" to distinguish from biological "cell"
 global ELE
 ELE = 6  # number of elements in a parallelogram
-
+dict_cell = {0: "BS", 1: "Nostoc"}  # for outputting information
 
 # %% define class cell
 # class Cell(dtype='uint18'):
@@ -101,14 +102,20 @@ def reverse_neighbor_value(idx_pair, nei, state_init):
 
 
 # %% initialization methods
-def init_classic_center(n: int, num=(100, 200, 100, 100), dtype='uint16'):
-    # create initial distribution by putting some bacteria in the center
-    # only "active" cell
-    # B.S and Nostoc, respectively
+def init_classic_center(n: int, num=(500, 500, 200, 1000), dtype='uint16'):
+    """
+    create initial distribution by putting some bacteria in the center
+    :param num: B.S and Nostoc, respectively. only "active" cell.
+    note: initial EPS and nutrient is put everywhere with the value given
+    guarantee initial value is enough by adding cps at each seed
+    :return: initial state
+    """
     state0 = np.zeros((ELE, n, n), dtype=dtype)
-    idx = [0, 2, 4, 5]
-    for i in idx:
-        state0[i, int(n / 2), int(n / 2)] = num[idx.index(i)]
+    for i in [0, 2]:
+        state0[i, int(n / 2), int(n / 2)] = num[int(i/2)]
+    for i in [4, 5]:
+        state0[i] = np.ones(shape=(n, n), dtype=dtype) * num[i-2]
+    state0[4, int(n / 2), int(n / 2)] += num[0] + num[1]
 
     return state0
 
@@ -122,6 +129,25 @@ def init_free(n: int, location=(0, 0), num=(10, 4, 10, 4, 10, 10), dtype='uint16
     state0 = np.zeros((ELE, n, n), dtype=dtype)
     for i in range(len(num)):
         state0[i, location] = num[i]
+
+    return state0
+
+
+def init_multi_pos(n:int, idx_pairs, cell_values, eps, nut, dtype='uint16'):
+    """
+    :param idx_pairs: tuple (2). all positions you want to place bacteria
+    :param cell_values: tuple (2). according to idx_pairs, BS and No values
+    :param eps, nut: for everywhere
+    :return: initial state
+    """
+    state0 = np.zeros((ELE, n, n), dtype=dtype)
+    # bacteria
+    for i in range(len(idx_pairs)):
+        for j in [0, 1]:
+            state0[j][idx_pairs[i]] = cell_values[i][j]
+            state0[4][idx_pairs[i]] += cell_values[i][j]
+    # eps and nutrient
+    state0 += init_classic_center(n, (0, 0, eps, nut), dtype)
 
     return state0
 
@@ -169,7 +195,7 @@ def calcu_num_migration(diff, weight, probs_migration, dtype):
     migration probabilities, actually diffusion coefficient of BS, No, EPS and nutrient
     :param dtype: we must control dtype here
     :return: diffusion coefficient * 2nd derivatives * normalized weights
-    due to 2nd derivative assumption, we are not multiplying states[(i, 2), x, y].reshape(2, 1)
+    due to gradient assumption, we are not multiplying states[(i, 2), x, y].reshape(2, 1)
     we add because bacteria both move themselves and take away by osmotic pressure & swelling at the same time
     weights contain info on both the importance and unit unification between EPS and bacteria
     after adding all mechanisms, we just use the positive term, because num_migration in opposite
@@ -187,26 +213,42 @@ def calcu_num_migration(diff, weight, probs_migration, dtype):
     return num_migration
 
 
+def update_cps(state_start, state_end, ratio_cps):
+    """
+    called by pure migration function: update_number_mig, update_con_grow/push
+    we just calculate difference between cell numbers, and * cps ratio
+    :param state_start: start
+    :param state_end: end
+    :param ratio_cps: 0 for BS, 1 for No
+    :return: new state(end, update), only updated eps
+    """
+    state_update = state_end
+    for i in [0, 1]:
+        diff = state_end[i] - state_start[i]  # >0 means more cps
+        state_update[4] += diff * ratio_cps[i]
+
+    if np.min(state_update[4]) < 0:  # no enough eps to take away
+        return state_update, True
+    else:
+        return state_update, False
+
+
 def update_number_mig(state_update, idx_pair, neighbors, num_migration, ratio_cps):
     """
     update population numbers (only once for a certain parallelogram)
     CPS will be taken away by microorganism but nutrient won't
+    there might be much more EPS units, but a unit is small. we can guarantee there are enough EPS for bacteria to take with
     :param ratio_cps: how much units of CPS a BS/No can take away (or, how much a cell contains)
     """
     # idx = [0,2,4,5]
     idx = [0, 2]
-    # update the neighbors
+    # cell migration, driven by osmotic pressure
     for nei in neighbors:
-        # cell migration
         for i in idx:
             # in case num_mig > num_center. directly change the values in this array
             num_migration[idx.index(i), neighbors.index(nei)] = np.minimum(state_update[i][idx_pair], num_migration[idx.index(i), neighbors.index(nei)])
             state_update[i][nei] += num_migration[idx.index(i), neighbors.index(nei)]
             state_update[i][idx_pair] -= num_migration[idx.index(i), neighbors.index(nei)]
-
-        # calculate cps migration, using modified num_migration
-        for i in [0, 1]:
-            state_update[4][nei] += num_migration[i, neighbors.index(nei)] * ratio_cps[i]
 
     return state_update
 
@@ -222,11 +264,12 @@ def update_mig(idx_pairs, n, state_update, state_init, grid,
     TODO: to be unified into this CA unit
     :var: idx_pair: the center
     :return: new state (t+1/2 in the paper)
-    based on diffusion equation, where particles move according to gradient
+    - based on diffusion equation, where particles move according to gradient
     we just consider the difference between the center and its neighbors to determine the 2nd derivative
     TODO: may be changed, using random variables. now we round off the numbers
     before doing so, it should all be isotropic
     """
+    state_start = state_update.copy()  # for updating cps
     for idx_pair in idx_pairs:
         neighbors = find_neighbors(idx_pair, n, grid)  # find neighbors
         # if state_init[0][idx_pair] != 0:  # for debugging, find where there are bacteria
@@ -235,102 +278,149 @@ def update_mig(idx_pairs, n, state_update, state_init, grid,
         num_migration = calcu_num_migration(diff, weight, probs_migration, dtype)
         state_update = update_number_mig(state_update, idx_pair, neighbors, num_migration, ratio_cps)
 
-    return state_update
+    # cps migration, taken by cells, using modified num_migration
+    state_update, exit_flag = update_cps(state_start, state_update.copy(), ratio_cps)
+    if exit_flag:
+        print("CPS is not enough when updating migration.\nProgram will exit.")
+
+    return state_update, exit_flag
 
 
 #%% consolidation
-def going_out(idx_pair, neighbors, num, state_init, state_update):
+def going_out(idx_pair, neighbors, num, state_update):
     """
     redundant cells go out, the mechanism of cell "push"!
     we assume that this push follows the gradient of cell density, not simply outwards
+    but we just round them off
     :param idx_pair: center
     :param num: to go out
-    :param state_init, state_update are both states of a single microorganism
+    :param state_update is states of a single microorganism
     :return: new state (set state[idx_pair] in the parent function)
     """
-    diff = calcu_diff(state_init, idx_pair, neighbors).squeeze()  # generally they will all be positive
+    diff = calcu_diff(state_update, idx_pair, neighbors).squeeze()  # generally they will all be positive
     diff = np.maximum(diff, 0)  # ignore negative migration. shape = (1, len(neighbors))
+    if np.max(diff) == 0:  # if diff are all zero
+        return state_update
     num_out = (diff / np.sum(diff) * num).round()  # distribute num according to proportion of diff
-    # print(diff)
-    print(num_out)
     for nei in neighbors:
-        state_update[nei] = state_update[nei] + num_out[neighbors.index(nei)]  # add neighbors
+        try:
+            state_update[nei] = state_update[nei] + num_out[neighbors.index(nei)]  # add neighbors
+        except Exception as e:
+            print(num_out[neighbors.index(nei)])
 
     return state_update
 
 
-def update_con_grow(n, grid, idx_pairs_rand, r, K, state_update, ratio=2):
+def update_con_grow(idx_pairs_rand, r, K, state_update, ratio=2):
     """
+    growth. the numbers increase
     :param state_update: only input number of BS (1) and No (2)
     :param r: a tuple of (r1, r2)
     :param K: a tuple of (K1, K2)
     :param ratio: a certain ratio of K to limit growth. 2 (default) has no effect
     :return new state of BS and No
-    if num < K, just grow; or the redundant cells are pushed out ("outwards?")
     """
-    # grow
     for i in [0, 1]:
         grow = np.ones(shape=state_update[i].shape) * (1 + r[i])  # (n,n), times to multiply
         for idx_pair in idx_pairs_rand:
             if state_update[i][idx_pair] > ratio * K[i]:  # number > a certain ratio of K
                 grow[idx_pair] = 1  # cell won't grow
         state_update[i] = state_update[i] * grow
+        if np.sum(state_update[i]) / state_update.shape[-1] / state_update.shape[-2] > K[i]:
+            print("The total number of " + dict_cell[i] + " cells has exceeded the total carrying capacity. "
+                  "\nNo going-out will achieve a balance. Please increase n. Program will exit.")
+            # return exit = True to go back to function "simulation" and output
+            return state_update[0], state_update[1], True
+        else:
+            return state_update[0], state_update[1], False
 
-    state_init = state_update  # copy, for going through idx pairs
-    # expansion due to overgrowth and redundant cells
-    while True:  # iterate until all parallelograms' values < K[i]
+
+def update_con_push(n, grid, idx_pairs_rand, K, state_update):
+    """
+    expansion due to overgrowth and redundant cells. if not so, just return back
+    :param state_update: only input number of BS (1) and No (2)
+    :return new state of BS and No
+    if num < K, just grow; or the redundant cells are pushed out ("outwards?")
+    - we assume that cells go out in a random order, because the process of pushing.
+    so we just use state_update to calculate diff...just add state_init if you want to update simultaneously
+    - we assume that cells are pushed based merely on cell density gradient
+    TODO: may add "action at a distance" (超距作用), if some consecutive cells exceed K, they just push the outest one
+    to replace max_iter
+    """
+    max_iter = 20  # if the cells are crowded, they need a few iterations to achieve <= K
+    for t in range(max_iter):  # try to iterate until all parallelograms' values < K[i]
         for i in [0, 1]:
-            big = [idx_pair for idx_pair in idx_pairs_rand if state_init[i][idx_pair] > K[i]]  # find the bigger idxes
+            big = [idx_pair for idx_pair in idx_pairs_rand if state_update[i][idx_pair] > K[i]]  # find the bigger idxes
             for idx_pair in big:  # if big, some goes out
                 neighbors = find_neighbors(idx_pair, n, grid)  # find neighbors
                 state_update[i] = going_out(idx_pair, neighbors, state_update[i][idx_pair] - K[i],
-                                            state_init[i], state_update[i])
+                                            state_update[i])
                 state_update[i][idx_pair] = K[i]
 
             if np.max(state_update[0]) <= K[0] and np.max(state_update[1]) <= K[1]:  # judge the two simultaneously
                 # may return going_out to calculate CPS migration
-                return state_update[0], state_update[1]
-            # print("still iterating")  # for debugging
+                return state_update[0], state_update[1], False
+            # print("iteration" + str(t))  # for debugging
+
+    print("After " + str(max_iter) + " iterations' pushing, the cells are still too dense "
+                                     "to push each other and reach K"
+                                     "\nProgram will exit.")
+
+    return state_update[0], state_update[1], True
 
 
-def update_con_spores(state_update, m1, m2):
-    # we ignore natural decay
-    # spores are only caused by sufficient nutrient
-
-    return state_update
-
-
-def update_con_nutrient(state_update):
+def update_con_nutrient(state_update, l, y):
+    """
+    we ignore natural decay
+    only sufficient nutrient cause spores
+    :param state_update:
+    :param l: a tuple of (l1, l2)
+    :param y: a tuple of (y1, y2)
+    :return: new state of all
+    we assume
+    """
+    # to_spores = state_update[0] *
     return state_update
 
 
 def update_con(idx_pairs_rand, n, state_update, grid, dtype,
-               params_BS, params_No):
+               params_BS, params_No, ratio_cps):
     """
     1 for BS, 2 for No
-    :param r1: birth rate. alpha
-    :param l1: turn into spores. relatively low
-    :param y1: nutrition consumption rate. gamma in the paper. we are not separating Q and respiratory rate
+    :param r: birth rate. alpha
+    :param l: turn into spores. relatively low
+    :param y: nutrition consumption rate. gamma in the paper. we are not separating Q and respiratory rate
     :return: state_update, new state (b^t+1)
-    we assume that the state has something to do with update order, because the process of pushing.
-    this order should be random
+
     """
 
     r1, l1, y1, K1 = params_BS
     r2, l2, y2, K2 = params_No
 
-    state_init = state_update.copy()
     # if state_init[0][idx_pair] != 0:  # for debugging, find where there are bacteria
     #     print("not empty")
-    # grow; redundant cells going out. only use states of BS and No
-    state_update[0], state_update[2] = update_con_grow(n, grid, idx_pairs_rand,
-                                                       (r1, r2), (K1, K2), state_update[[0, 2]], 2)
-    # after growth, some turn into spores
-    # state_update = update_con_spores()
-    # consume / produce nutrients (carbon), using the number of new cells
+
+    # consume / produce nutrients (carbon) first. some turn into spores after migration and nutrient consumption
     # state_update = update_con_nutrient()
 
-    return state_update
+    state_start = state_update.copy()  # for calculating cps
+    # grow; redundant cells going out. only use states of BS and No
+    state_update[0], state_update[2], exit_flag = update_con_grow(idx_pairs_rand, (r1, r2),
+                                                                  (K1, K2), state_update[[0, 2]], 2)
+    if exit_flag:  # if exit == True, stop the simulation immediately, pass the flag to "simulation"
+        state_update, exit_flag2 = update_cps(state_start, state_update, ratio_cps)
+        if exit_flag2:
+            print("CPS is not enough when updating growing.\nProgram will exit.")
+        return state_update, exit_flag
+
+    state_update[0], state_update[2], exit_flag = update_con_push(n, grid, idx_pairs_rand,
+                                                                  (K1, K2), state_update[[0, 2]])
+    state_update, exit_flag2 = update_cps(state_start, state_update.copy(), ratio_cps)
+    if exit_flag2:
+        print("CPS is not enough when updating pushing.\nProgram will exit.")
+    # no matter exit_flag is, it will return and update cps. but only if flags are all false, return false
+
+    return state_update, exit_flag or exit_flag2
 
 
 # %% main function
@@ -344,18 +434,19 @@ def stimulation_v3(n, grid='rect_Moore', state_init=None, epoch=10,
     we call the two phases (migration; consolidation) "phase"
     each phase involves multiple "updates", going through all points and values
     :param grid: for rectangular grid: Moore (8) or Neumann (4); or hexagonal (6)
-    :param n:
-    :param grid:
-    :param state_init:
+    :param n: size of grid
+    :param state_init: we set one / multiple seeds
     :param epoch:
-    :param see_phase:
-    :param dtype:
+    :param see_phase: if we return states after the migration phase (i+1/2 epochs)
+    :param dtype: 'int16'
     :param probs_migration:
     :param weight:
     :param ratio_cps:
     :param params_BS:
     :param params_No:
-    :return:
+    :return: states along the time
+    notes:
+    -
     """
 
     if state_init is None:
@@ -363,14 +454,11 @@ def stimulation_v3(n, grid='rect_Moore', state_init=None, epoch=10,
         return
 
     # preparation
-    states_epoch = np.zeros(shape=(epoch + 1, ELE, n, n), dtype=dtype)
-    state_update = states_epoch[0] = state_init  # create a 3 dimensional array and initialize
+    states_epoch = [state_init]
+    state_update = state_init  # create a 3 dimensional array and initialize
     idx_pairs = pairs(n)  # generate sequential pairs of location coordination
     idx_pairs_rand = rand_pairs(n)
-    if see_phase:  # only if we want to observe the change after each phase, we add this, or it costs time
-        states_phase = np.zeros(shape=(epoch * 2 + 1, ELE, n, n), dtype=dtype)
-    else:
-        states_phase = None
+    states_phase = []
 
     # simulation
     for time in range(epoch):
@@ -380,26 +468,30 @@ def stimulation_v3(n, grid='rect_Moore', state_init=None, epoch=10,
         copy means a no relationship with the original one
         """
         # migration phase
+        state_update, exit_flag = update_mig(idx_pairs, n,
+                                             state_update, state_init=state_update.copy(), grid=grid,
+                                             probs_migration=probs_migration, weight=weight, ratio_cps=ratio_cps,
+                                             dtype=dtype)
+        if exit_flag:  # stop the simulation immediately
+            return np.array(states_epoch, dtype=dtype), np.array(states_phase, dtype=dtype)
 
-        state_update = update_mig(idx_pairs, n,
-                                  state_update, state_init=state_update.copy(), grid=grid,
-                                  probs_migration=probs_migration, weight=weight, ratio_cps=ratio_cps,
-                                  dtype=dtype)
-
-        if see_phase:
-            states_phase[time * 2 + 1] = state_update.copy()
+        if see_phase:  # only if we want to observe the change after each phase, we add this, or it will cost time
+            states_phase.append(state_update.copy())
 
         # consolidation phase
-        state_update = update_con(idx_pairs_rand, n,
-                                  state_update, grid=grid,
-                                  dtype=dtype, params_BS=params_BS, params_No=params_No)
+        state_update, exit_flag = update_con(idx_pairs_rand, n,
+                                             state_update, grid=grid, dtype=dtype,
+                                             params_BS=params_BS, params_No=params_No, ratio_cps=ratio_cps)
+        if exit_flag:  # stop the simulation immediately
+            return np.array(states_epoch, dtype=dtype), np.array(states_phase, dtype=dtype)
 
         if see_phase:
-            states_phase[time * 2 + 2] = state_update.copy()
+            states_phase.append(state_update.copy())
 
-        states_epoch[time + 1] = state_update
+        states_epoch.append(state_update)
         print("The iteration epoch "+str(time)+" has finished normally")
-    return states_epoch, states_phase
+
+    return np.array(states_epoch, dtype=dtype), np.array(states_phase, dtype=dtype)
 
 
 # %% visualization
@@ -409,7 +501,7 @@ def my_plot2d_animate(ca, idx=0, title='evolve', interval=50, my_cmap='Greys'):
     fig = plt.figure(figsize=(9.6, 7.2))
     ax = fig.add_subplot(1, 1, 1)
     im = plt.imshow(ca[0][idx], animated=True, cmap=cmap)  # set the value range here!, vmin=0, vmax=3
-    plt.colorbar(ticks=get_ticks(np.max(ca)))  # set special values in the bar
+    plt.colorbar(ticks=get_ticks(np.max(ca[:, idx])))  # set special values in the bar
     i = {'index': 0}  # because it is used in a newly-defined function
 
     def updatefig(*args):
@@ -433,10 +525,13 @@ def my_plot2d(ca, timestep=None, title='', my_cmap='Greys', idx=0):
     if timestep is None:  # maybe the input is a single-time state
         data = ca[idx]
     else:
-        data = ca[timestep, idx]
+        data = ca[timestep][idx]
     plt.imshow(data, interpolation='none', cmap=cmap)
     plt.colorbar(ticks=get_ticks(np.max(data)))
 
 
 def get_ticks(max, sep=1000):
-    return list(sep * np.arange(int(max / sep) + 1))+[max]
+    ticks = list(sep * np.arange(int(max / sep) + 1))
+    if max > ticks[-1] + 0.2 * sep:  # to avoid the situation that max is a little bigger than the biggest tick
+        ticks = ticks + [max]
+    return [0] + ticks

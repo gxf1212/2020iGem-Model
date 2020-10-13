@@ -4,6 +4,10 @@
 
 import networkx as nx
 
+
+
+
+#%%
 m = 5  # number of rows of hexagons in the lattice
 n = 5  # number of columns of hexagons in the lattice
 isPBC = False # if True, use periodic boundary conditions
