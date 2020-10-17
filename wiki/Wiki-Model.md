@@ -102,24 +102,15 @@ $$
 $$
 ​	图？	
 
-### parameters' values
 
-| Parameter       | Descriptions      | Value                                                        | References                                                   |
-| --------------- | ----------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| $K_{1c}$        |                   |                                                              |                                                              |
-| $K_{2c}$        | 0（直接不设置因子 | 值为零                                                       | Analysis of the cyanobacterial hydrogen photoproduction process via modelidentification and processs imulation |
-| $K_{1n},K_{1p}$ |                   |                                                              |                                                              |
-| $K_{2n},K_{2p}$ | 9.31,1.30         | 直接设$S_{ex}/X$，无量纲                                     | The concentration thresholds establishment of nitrogen and phosphorus ... |
-| $Q_{1c}$        | 0.6528            | 消耗葡萄糖-$\mu$，直线斜率, growth yield 的倒数              | Reducing maintenance metabolism by metabolic engineering ... |
-| $Q_{1n},Q_{1p}$ | 0.0734,0.00607    | P数据：N限制，反之；用计算值；NP随d增加，取平均？；忽略其他的。 | Bacillus subtilis Metabolism and Energetics in Carbon-Limited...这个不太稳 |
-| $Q_{2c},Q_{2n}$ | 0.2523,0.0846     | 直接给出质量分数                                             | Evaluation of a Cyanobacterium, Nostoc sp. HK-01             |
-| $Q_{2c}$        |                   |                                                              |                                                              |
-| $Q_{2p}$        | 0.00248           | 蓝藻的                                                       | CP-AES 法测定巢湖蓝藻中14 种元素                             |
-| $Re_1$          | 1.34e-04 h^-1^    | 消耗葡萄糖-$\mu$，截距，maintenance                          | Reducing maintenance metabolism by metabolic engineering ... |
-| $NPh$           |                   |                                                              |                                                              |
-| $N_f$           | 7.38e-06          | 对照组固氮速率<br />再除以藻细胞质量                         | 铝对海洋固氮蓝藻Crocosphaera watsonii ...<br />Abundance and biomass of cyanobacteria and algae in cave biofilms |
-| $P_f$           | 6.16e-07 h^-1^    | 固磷量除以24h内平均生物量                                    | 解磷菌的培养条件优化研究                                     |
-|                 |                   |                                                              |                                                              |
+
+
+
+
+
+6.16e-7  固磷量除以24h内平均生物量  解磷菌的培养条件优化研究
+
+
 
 
 ## Result Analysis

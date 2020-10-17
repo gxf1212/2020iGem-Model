@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetDataWorkspace>
+  <version>2.26.0.20</version>
+  <WSversion>10</WSversion>
+  <File>
+    <Name>C:\Users\Lenovo\Desktop\1.jpg</Name>
+    <Width>773</Width>
+    <Height>703</Height>
+  </File>
+  <Line>
+    <Caption>Line #1</Caption>
+    <LineColor>251,182,153</LineColor>
+    <BkColor>255,255,255</BkColor>
+    <PtColor>220,70,220</PtColor>
+    <LineType>0</LineType>
+    <Points MF="9">1515,4892,1400,4308,1747,3766,1629,3448,1746,3231,1519,3086,1746,2959,2321,2889,1860,2877,2092,2646</Points>
+    <Points MF="9">1978,2776,1745,2714,1629,2357,3009,2836,2892,2687,2205,2443,1861,2497,2092,2093,1976,2456,1862,2271</Points>
+    <Points MF="9">1976,2001,1862,1558,2091,1561,1746,1396,1976,1252,1746,1275,2433,1325,2434,1200,2779,1570,2893,1643</Points>
+    <Points MF="9">3239,2119,3926,2019,2893,1245,2892,1134,3697,1000,2893,837,3697,562</Points>
+  </Line>
+  <CurrentLine>0</CurrentLine>
+  <Xmin MF="9">949,5341,0.000000e+000</Xmin>
+  <Xmax MF="9">958,274,5.000000e+000</Xmax>
+  <Ymin MF="9">1174,5539,0.000000e+000</Ymin>
+  <Ymax MF="9">5764,5539,4.000000e+001</Ymax>
+  <XScale>linear</XScale>
+  <YScale>linear</YScale>
+  <Position>801,393</Position>
+  <Zoom>
+    <Scale>80.0</Scale>
+  </Zoom>
+  <Digitize>
+    <IgnorePixels>1</IgnorePixels>
+    <LineIDMethod>2</LineIDMethod>
+  </Digitize>
+  <AutoTrace>
+    <TraceDistance>8</TraceDistance>
+    <SmoothLines>1</SmoothLines>
+  </AutoTrace>
+  <DigitizeArea>
+    <LineOrArea>0</LineOrArea>
+    <RotateAngle>0.000000</RotateAngle>
+    <dx>8.000000</dx>
+  </DigitizeArea>
+  <GridSettings>
+    <ShowGrid>0</ShowGrid>
+    <AreaType>0</AreaType>
+    <dx>15.000000</dx>
+    <dy>15.000000</dy>
+  </GridSettings>
+</GetDataWorkspace>

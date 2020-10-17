@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetDataWorkspace>
+  <version>2.26.0.20</version>
+  <WSversion>10</WSversion>
+  <File>
+    <Name>E:\undergraduate_study\study\research&amp;competition\igem及合成生物学\土壤改造\建模\2020iGem-Model\growth simulation\parameters\water\1.jpg</Name>
+    <Width>773</Width>
+    <Height>703</Height>
+  </File>
+  <Line>
+    <Caption>Line #1</Caption>
+    <LineColor>251,182,153</LineColor>
+    <BkColor>254,254,254</BkColor>
+    <PtColor>220,70,220</PtColor>
+    <LineType>0</LineType>
+    <Points MF="9">1632,4395,1285,4374,1975,4246,2091,3806,1631,3625,1746,3574,1516,3406,1861,3294,1402,3310,1402,3223</Points>
+    <Points MF="9">1402,3188,1400,2984,1629,3347,1632,3150,1400,2668,1515,2625,1289,2312,1632,2194,1519,1597,1745,1159</Points>
+    <Points MF="9">2205,1715,1976,2520,2092,2515,2320,2592,2320,2642,1861,2204,1860,2071,1859,2105,2090,2316,2204,2230</Points>
+    <Points MF="9">2204,2141,2321,1964,2895,2340,3009,3364,3352,2510,2893,2046,2893,1044,3352,2245,3237,1646,3926,1743</Points>
+    <Points MF="9">3581,2053,3582,2142,3009,414,4156,2164,4271,2253,4271,2328,4729,2644,4500,2249,5074,1930,4614,1683</Points>
+    <Points MF="9">4615,1380,4957,1686,5189,1477,1287,4879</Points>
+  </Line>
+  <CurrentLine>0</CurrentLine>
+  <Xmin MF="9">958,5341,0.000000e+000</Xmin>
+  <Xmax MF="9">958,274,5.000000e+000</Xmax>
+  <Ymin MF="9">1174,5539,0.000000e+000</Ymin>
+  <Ymax MF="9">5764,5539,4.000000e+001</Ymax>
+  <XScale>linear</XScale>
+  <YScale>linear</YScale>
+  <Position>133,533</Position>
+  <Zoom>
+    <Scale>80.0</Scale>
+  </Zoom>
+  <Digitize>
+    <IgnorePixels>1</IgnorePixels>
+    <LineIDMethod>2</LineIDMethod>
+  </Digitize>
+  <AutoTrace>
+    <TraceDistance>8</TraceDistance>
+    <SmoothLines>1</SmoothLines>
+  </AutoTrace>
+  <DigitizeArea>
+    <LineOrArea>0</LineOrArea>
+    <RotateAngle>0.000000</RotateAngle>
+    <dx>8.000000</dx>
+  </DigitizeArea>
+  <GridSettings>
+    <ShowGrid>0</ShowGrid>
+    <AreaType>0</AreaType>
+    <dx>15.000000</dx>
+    <dy>15.000000</dy>
+  </GridSettings>
+</GetDataWorkspace>

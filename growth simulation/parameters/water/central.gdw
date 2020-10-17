@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetDataWorkspace>
+  <version>2.26.0.20</version>
+  <WSversion>10</WSversion>
+  <File>
+    <Name>E:\undergraduate_study\study\research&amp;competition\igem及合成生物学\土壤改造\建模\2020iGem-Model\growth simulation\parameters\water\1.jpg</Name>
+    <Width>773</Width>
+    <Height>703</Height>
+  </File>
+  <Line>
+    <Caption>Line #1</Caption>
+    <LineColor>251,182,153</LineColor>
+    <BkColor>255,255,255</BkColor>
+    <PtColor>220,70,220</PtColor>
+    <LineType>0</LineType>
+    <Points MF="9">2548,3980,1518,4003,2549,3120,2780,3000,2895,2833,1862,2930,1748,2814,1862,2411,1978,2265,2322,2172</Points>
+    <Points MF="9">2665,2530,2665,2222,2548,2122,2435,1397,2548,1341,2780,1134,3008,1274,3695,2453,3926,1827,4500,2044</Points>
+    <Points MF="9">4843,2088,4844,1147,5071,1726,5303,1398,5532,1447,5993,2475</Points>
+  </Line>
+  <CurrentLine>0</CurrentLine>
+  <Xmin MF="9">958,5341,0.000000e+000</Xmin>
+  <Xmax MF="9">958,274,5.000000e+000</Xmax>
+  <Ymin MF="9">1174,5539,0.000000e+000</Ymin>
+  <Ymax MF="9">5764,5539,4.000000e+001</Ymax>
+  <XScale>linear</XScale>
+  <YScale>linear</YScale>
+  <Position>656,264</Position>
+  <Zoom>
+    <Scale>80.0</Scale>
+  </Zoom>
+  <Digitize>
+    <IgnorePixels>1</IgnorePixels>
+    <LineIDMethod>2</LineIDMethod>
+  </Digitize>
+  <AutoTrace>
+    <TraceDistance>8</TraceDistance>
+    <SmoothLines>1</SmoothLines>
+  </AutoTrace>
+  <DigitizeArea>
+    <LineOrArea>0</LineOrArea>
+    <RotateAngle>0.000000</RotateAngle>
+    <dx>8.000000</dx>
+  </DigitizeArea>
+  <GridSettings>
+    <ShowGrid>0</ShowGrid>
+    <AreaType>0</AreaType>
+    <dx>15.000000</dx>
+    <dy>15.000000</dy>
+  </GridSettings>
+</GetDataWorkspace>

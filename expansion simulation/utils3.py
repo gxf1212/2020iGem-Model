@@ -369,39 +369,70 @@ def update_con_push(n, grid, idx_pairs_rand, K, state_update):
     return state_update[0], state_update[1], True
 
 
-def update_con_nutrient(state_update, l, y):
+def update_con_nutrient(state_update, l, y, p, ratio_BN, dtype):
     """
     we ignore natural decay
     only sufficient nutrient cause spores
     :param state_update:
     :param l: a tuple of (l1, l2)
     :param y: a tuple of (y1, y2)
+    :param p: a tuple of (p1, p2)
+    :param ratio_BN: determining how much N/P BS can provide for No
     :return: new state of all
-    we assume
+    a unit nutrient means the least amount for a BS to consume in a single timestep
+    we assume nutrient is the limiting factor of BS, N and P (number of BS) for No
     """
-    # to_spores = state_update[0] *
+    # determine nutritional condition
+    # if nutrient is not enough to support bacteria, those redundant ones turn into spores
+    # those positions are False, thus not participating the following calculation
+    num_spo1 = (state_update[5] < state_update[0]) * (state_update[0] - state_update[5])
+    state_update[0] -= num_spo1
+    state_update[1] += num_spo1
+    # if nutrient is much more, just recover
+    num_rec1 = (state_update[5] > state_update[0] + state_update[1]) * np.array(state_update[1] * l[0], dtype)
+    state_update[1] -= num_rec1
+    state_update[0] += num_rec1
+    # the same for No, but rely on a ratio
+    # if BS is not enough to provide N/P, too low ratio or zero
+    num_spo2 = (state_update[0] / state_update[2] < ratio_BN or state_update[0] == 0)\
+               * np.array(state_update[0] / ratio_BN, dtype)
+    state_update[2] -= num_spo2
+    state_update[3] += num_spo2
+    # if BS is enough
+    num_rec2 = (state_update[0] / (state_update[2] + state_update[3]) > ratio_BN or state_update[0] == 0)\
+               * np.array(state_update[3] * l[1], dtype)
+    state_update[3] -= num_rec2
+    state_update[2] += num_rec2
+
+    # update nutrient. minus. y[No] < 0
+    for i in [0, 1]:
+        state_update[5] -= np.array(state_update[i] * y[i], dtype)
+
+    # update rps
+    for i in [0, 1]:
+        state_update[4] += np.array(state_update[i*2] * p[i], dtype)  # s[2]*p[1]
+
     return state_update
 
 
 def update_con(idx_pairs_rand, n, state_update, grid, dtype,
-               params_BS, params_No, ratio_cps):
+               params_BS, params_No, ratio_cps, ratio_BN=1):
     """
     1 for BS, 2 for No
     :param r: birth rate. alpha
-    :param l: turn into spores. relatively low
+    :param l: rate of change into spores when nutrients are enough. maybe include death due to slow recovery
     :param y: nutrition consumption rate. gamma in the paper. we are not separating Q and respiratory rate
+    :param p: rps production rate. not too big (depending on ratio of cps and rps)
     :return: state_update, new state (b^t+1)
-
     """
-
-    r1, l1, y1, K1 = params_BS
-    r2, l2, y2, K2 = params_No
+    r1, l1, y1, p1, K1 = params_BS
+    r2, l2, y2, p2, K2 = params_No
 
     # if state_init[0][idx_pair] != 0:  # for debugging, find where there are bacteria
     #     print("not empty")
 
     # consume / produce nutrients (carbon) first. some turn into spores after migration and nutrient consumption
-    # state_update = update_con_nutrient()
+    state_update = update_con_nutrient(state_update, (l1, l2), (y1, y2), (p1, p2), ratio_BN, dtype)
 
     state_start = state_update.copy()  # for calculating cps
     # grow; redundant cells going out. only use states of BS and No
@@ -532,6 +563,6 @@ def my_plot2d(ca, timestep=None, title='', my_cmap='Greys', idx=0):
 
 def get_ticks(max, sep=1000):
     ticks = list(sep * np.arange(int(max / sep) + 1))
-    if max > ticks[-1] + 0.2 * sep:  # to avoid the situation that max is a little bigger than the biggest tick
+    if max > ticks[-1] + 0.1 * sep:  # to avoid the situation that max is a little bigger than the biggest tick
         ticks = ticks + [max]
     return [0] + ticks

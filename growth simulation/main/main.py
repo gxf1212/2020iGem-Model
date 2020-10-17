@@ -2,12 +2,14 @@
 
 import sys
 
-import pylab as pl
 import matplotlib.pyplot as plt
+import pylab as pl
 from matplotlib.pyplot import plot, subplot, figure, legend, xlabel, ylabel, title
 
-sys.path.append(r'E:\undergraduate_study\study\research&competition\igem及合成生物学\土壤改造\建模\2020iGem-Model\growth simulation\main')
+sys.path.append(
+    r'E:\undergraduate_study\study\research&competition\igem及合成生物学\土壤改造\建模\2020iGem-Model\growth simulation\main')
 from utils import *
+
 # the project is defined in the folder 'growth stimulation',
 # we have to append the path 'main', and just ignore the error
 # we have to use date type 'float64'
@@ -17,10 +19,10 @@ from utils import *
 # parameters
 # 增长率，decay rate
 r1 = np.log(2) / 30
-r2 = np.log(2) / 20
-# m1=0.196/60 # 14.812 min^{-1}
-m1 = 0.001
-m2 = 0.001
+r2 = 0.035 / 60
+m1 = 0.196 / 60  # 14.812 min^{-1}
+m2 = 0.0035 / 60
+# r2 = r2 * 2
 
 # 分泌毒素的抑制，gamma，单位和N^{-2}相同
 ga1 = 0.1  # 2对1的限制
@@ -40,12 +42,12 @@ Q1c = 0.34 * 8 / 0.3 * 1e-3 * 72  # reciprocal of growth yield
 Q1n = 0.0734
 Q1p = 0.00607
 # 蓝藻
-# Q2c=0.2523 # 估算的质量分数
-Q2c = 0.488 / 0.65
+Q2c = 0.2523  # 估算的质量分数
+# Q2c = 0.488 / 0.65
 Q2n = 0.0846
 Q2p = 0.00248
 # Q2p = Q2p*20;  # consider P luxury uptake by Nostoc
-Q1n=Q1n*20
+# Q1n = Q1n*20
 
 # 念珠藻两种细胞的比例，为了更真实
 f_Nf = 0.1
@@ -54,20 +56,24 @@ f_Ph = 1 - f_Nf
 # 转化速率，暂时认为和时间无关
 # 芽孢呼吸，maintenance energy coefficient of 0.67 mmol glucose/g CDW/h
 Re1 = 0.67e-3 * 12 / 60
-# 蓝藻（用了铜绿）净光合，4.41+-0.16μmol(mg·min)，1000/54为光强
-NPh = 4.41e-3 * 12.01 * np.tanh((1000 / 54) * 0.016 / 4.41)
-# NPh=NPh*f_Ph
+# (pseudomonas aeruginosa) net photosynthesis rate, 4.41+-0.16μmol(mg·min)
+I = 100000 / 54  # luminosity
+# I = 200
+# NPh = 4.41e-3 * 12.01 * np.tanh(I * 0.016 / 4.41)  # 0.0530
+NPh = 4.41e-3 * 12.01 * I / (165 + I + I ** 2 / 457)  # 0.0103
+NPh = NPh * f_Ph
 # bacterial N fixation
-Nf1 = 1e-4
+Nf1 = 2.600e-4
+# Nf1=2.3e-4;
+# Nf1 = 2.202e-4
 # 蓝藻固氮,1.72+-0.25 fmol N/cell/h，细胞质量是估计的
 Nf2 = 1.72e-15 * 14.01 / 60 * (7722e6 / 0.42)
-# Nf=Nf*f_Nf
-Nf2 = Nf2 * 7
+Nf2 = Nf2 * f_Nf
 # 芽孢溶磷，无机+有机
-Pf = 8.87e-4 / 1440 + 0
-Pf = Pf * 10
+# Pf = 8.87e-4 / 1440 + 0
+Pf = 31.0049e-3 / 1440
 
-# pH值
+# pH
 pH0 = 9.1
 
 # Variables
@@ -76,7 +82,7 @@ pH0 = 9.1
 
 # 迭代变量，设定为初值
 # 初始菌浓度，通常藻比菌多
-n1 = 0.01
+n1 = 0.1
 n2 = 0.2
 # 初始营养浓度，单位g/L
 
@@ -93,7 +99,7 @@ rp = 3.676e-6
 rho = 1.446e3
 
 rc = rc / 1.724  # 源数据为有机质，非碳
-rn = rn * 0.05; # 氮要用可利用氮（无机，而部分有机氮可转化）
+rn = rn * 0.05  # 氮要用可利用氮（无机，而部分有机氮可转化）
 # rp = rp / 0.06  # 磷别用总磷
 
 # 自己添加资源
@@ -107,7 +113,7 @@ rn = rn * rho
 rp = rp * rho  # 此时单位为g/L
 
 
-#%%useful functions
+# %%useful functions
 def MM(r, k, n):
     return r / (r + k * n)
 
@@ -132,7 +138,7 @@ def numerical_simulation(n1, n2, rc, rn, rp, t_max):
     # 输入参数：几个变量的初值
 
     step = 0.01
-    time = [(t+1)*step for t in range(int(t_max/step))]
+    time = [(t + 1) * step for t in range(int(t_max / step))]
     for t in time:
         # 更新的顺序可能无所谓，因为step取得很小
         # 更新资源限制因素
@@ -205,7 +211,6 @@ def plot_result(see_toxin=False):
     legend(['growth', 'decay'])
     plt.show()
 
-
     # % 资源
     fig3 = figure(3, figsize=(14, 10.5))
     plt.clf()
@@ -231,23 +236,22 @@ def plot_result(see_toxin=False):
 
     plt.show()
 
-
     # limiting factor analysis
     figure(4, figsize=(12, 9))
     plt.clf()
-    subplot(2,2,1)
+    subplot(2, 2, 1)
     title('f of B.S')
     # ha1=scatter(time, G1/N1/r1/toxin(ga1, N1, N2),color='k',marker='o',s=5)
-    ha1=plot(time, G1/N1/r1,linewidth=2.5)
-    ha2=plot(time, MM(Rc, Kc1, N1), time, MM(Rn, Kn1, N1), time, MM(Rp, Kp1, N1), linewidth=1)
-    legend(handles=[ha1,ha2[0],ha2[1],ha2[2]],labels=['f', 'C', 'N', 'P'])
+    ha1 = plot(time, G1 / N1 / r1, 'o', linewidth=0.5)
+    ha2 = plot(time, MM(Rc, Kc1, N1), time, MM(Rn, Kn1, N1), time, MM(Rp, Kp1, N1), linewidth=1)
+    legend(handles=[ha1, ha2[0], ha2[1], ha2[2]], labels=['f', 'C', 'N', 'P'])
 
-    subplot(2,2,2)
+    subplot(2, 2, 2)
     title('f of Nostoc')
     # ha1=scatter(time, G2/N2/r2/toxin(ga2, N1, N2), color='k',marker='o',s=5)
-    ha1=plot(time, G2/N2/r2, linewidth=2.5)
-    # # ha2=plot(time, MM(Rn, Kn2, N2), time, MM(Rp, Kp2, N2))
-    # # legend(handles=[ha1,ha2[0],ha2[1]],labels=['f','N','P'])
+    ha1 = plot(time, G2 / N2 / r2, 'o', linewidth=0.5)
+    ha2 = plot(time, MM(Rn, Kn2, N2), time, MM(Rp, Kp2, N2))
+    legend(handles=[ha1, ha2[0], ha2[1]], labels=['f', 'N', 'P'])
 
     if see_toxin:
         subplot(2, 2, 3)
@@ -256,14 +260,13 @@ def plot_result(see_toxin=False):
         legend(['B.S', 'Nostoc'])
 
 
-
 # fig2：重复运行图会变色和图例不同
 # fig1：不能控大小
 # fig3：控制坐标轴科学计数法
 
 
-#%% 调用模拟函数
-days = 4
+# %% 调用模拟函数
+days = 10
 t_max = 1440 * days  # 1天是1440min
 N1, N2, Rc, Rn, Rp, time, G1, G2 = numerical_simulation(n1, n2, rc, rn, rp, t_max)
 
@@ -276,13 +279,4 @@ plot_result()
 
 # Python用来比较正式的模拟，MATLAB做定性、单点的
 
-#%% 调参
-
-
-
-
-
-
-
-
-
+# %% 调参
