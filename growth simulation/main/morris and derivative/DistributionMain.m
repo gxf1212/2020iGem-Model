@@ -1,19 +1,13 @@
-% main for growth simulation
-% real parameters
-% unit of time is min^{-1} in accord with those of rates
-% rates per biomass, Ks are deminsionless（无量纲）
-% we assume that the unit of N is g/L
-
-% MATLAB supports versions Python 2.7, 3.6, and 3.7
-
-clear;clc;
+% pick many mu and many times to see biomass distribution
+% original AdjustMain
+clear;clc;clf;
 % parameters are set to global variables
 global r1 r2 m1 m2 Kc1 Kn1 Kp1 Kn2 Kp2 Re1 NPh Nf1 Nf2 Pf Q1c Q1n Q1p Q2c Q2n Q2p
 global ga1 ga2 pH0
 
 % growth & decay rate
 r1=log(2)/30;
-r2=0.03/60;
+r2=0.035/60;
 m1=0.196/60; % 14.812 min^{-1} 
 % m1=0.003; 
 m2=0.0035/60;
@@ -72,24 +66,15 @@ Nf2=Nf2*f_Nf;
 % B.S ^{-1}, inorganic+organic
 % Pf=8.87e-4/1440+0; 
 % Pf=Pf*10; 
-Pfmax=31.0049/1440/1000; % 溶磷最大速率
-Pfmin=Pfmax*0.1; % 溶磷最小速率
-miu_num=100; % 共检测μ的数量
-times=10; % 每个μ正态随机取样点的个数
-[PF,miu]=Norm(Pfmax,Pfmin,miu_num,times,-1,-1); % 获得所有的μ和对应的溶磷速率矩阵
 
-% pH
-pH0=9.1;
-
-%% simulation setup
 % variables
 % biomass, 1 for B.S, 2 for Nostoc
 % c,n,p for the element
 
 % initial values
 % cell density, Nostoc > B.S often
-n1=0.01;
-n2=0.02;
+n1=0.1;
+n2=0.2;
 % nutrient concentration, unit: g/L
 
 % option 1: natural condition
@@ -109,34 +94,43 @@ rc=rc*rho;rn=rn*rho;rp=rp*rho;
 % option 2: trial concentration
 % rc=0.02;rn=0.001;rp=0.001;rho=1.33e3;
 
-% option 3: cultural medium * 2
-% 1 and 2 now means type of medium culture
-% % concentration or percentage
-% cm1=1;cm2=1;
-% % mass fraction
-% rc1=1;rn1=1;rp1=1;
-% rc2=1;rn2=1;rp2=1;
-% % mixture
-% rc=cm1*rc1+cm2+rc2;
-% rn=cm1*rn1+cm2+rn2;
-% rp=cm1*rp1+cm2+rp2;
-
 % call the function
 days=5;
 t_max=1440*days; % 1 day=1440 min
+
+%% simulation setup
+Pfmax=31.0049/1440/1000; % 溶磷最大速率
+Pfmin=Pfmax*0.1; % 溶磷最小速率
+% assign random values
+miu_num=10; % 共检测μ的数量
+times=30; % 每个μ正态随机取样点的个数
+% PF: miu_num*times, storing all random values
+% miu: 1*miu_num, storing all mu
+% using min and max
+[PF,miu]=Norm(Pfmax,Pfmin,miu_num,times,-1,-1); % 获得所有的μ和对应的溶磷速率矩阵
+% assign mu and sigma
+% [PF,miu]=Norm(-1,-1,1,1,Pfmax/2, Pfmax/10);
+
+% a linear Pf, to see the parameters
+% miu_num=40; 
+% times=1;
+% PF=linspace(Pfmin,Pfmax,miu_num)';
+% miu=linspace(Pfmin,Pfmax,miu_num);
+
 % 为了加快画图速度，特引入以下三个数组
+% this shape is to plot all Pf (from different miu) together
 t=zeros(1,miu_num*times); % 储存自变量
 biomass_1=zeros(1,miu_num*times); % 储存第一个图的因变量
 biomass_2=zeros(1,miu_num*times); % 储存第二个图的因变量
 for i=1:miu_num
-    color1=(1/miu_num)*i; % 设定渐变的颜色
-    color2=(1/miu_num)*(miu_num-i);
-    color3=0;
-    color=[color1,color2,color3];
+%     color1=(1/miu_num)*i; % 设定渐变的颜色
+%     color2=(1/miu_num)*(miu_num-i);
+%     color3=0;
+%     color=[color1,color2,color3];
     for j=1:times
         Pf=PF(i,j); % 在每一个溶磷速率下进行一次计算
         [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
-        x=ones(1,length(time()))*miu(i); % 用μ的值作为x轴
+        x=ones(1,length(time))*miu(i); % 用μ的值作为x轴
 %         figure(1); % 作芽孢杆菌的图像
 %         plot3(x,time, N1, 'linewidth', 0.5,'color',color);
 %         hold on
@@ -149,7 +143,7 @@ for i=1:miu_num
     end
 end
 
-% 画图
+%% 画图
 figure(1)
 semilogy(t,biomass_1,'*','markersize',3);
 hold on;

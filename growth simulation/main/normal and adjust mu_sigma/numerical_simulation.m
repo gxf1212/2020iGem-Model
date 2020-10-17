@@ -12,9 +12,11 @@ G1=[];G2=[];
 global r1 r2 m1 m2 Kc1 Kn1 Kp1 Kn2 Kp2 Re1 NPh Nf1 Nf2 Pf Q1c Q1n Q1p Q2c Q2n Q2p
 global ga1 ga2
 
-step=0.01;
+% step=0.1;
+step=1;
 time=0+step:step:t_max; 
 for t=time
+    t
     % as step is small, we don't consider the update order
     % update f
     f1=min([MM(rc, Kc1, n1), MM(rn, Kn1, n1), MM(rp, Kp1, n1)]);
@@ -26,6 +28,13 @@ for t=time
     Grow2=f2*r2*n2;
 %     Grow1=f1*r1*n1*toxin(ga1, n1, n2);
 %     Grow2=f2*r2*n2*toxin(ga2, n1, n2);
+
+%     if mod(time,1440)<900 % considering night with no light
+%     if mod(time,720)<360
+%         rc=rc+(-Re1*n1+NPh*n2-Q1c*Grow1-Q2c*(Grow2-m2*n2))*step;
+%     else 
+%         rc=rc+(-Re1*n1-Q1c*Grow1-Q2c*(Grow2-m2*n2))*step;
+%     end
     rc=rc+(-Re1*n1+NPh*n2-Q1c*Grow1-Q2c*(Grow2-m2*n2))*step;
     rn=rn+(Nf1*n1+Nf2*n2-Q1n*Grow1-Q2n*(Grow2-m2*n2))*step;
     rp=rp+(Pf*n1-Q1p*Grow1-Q2p*(Grow2-m2*n2))*step;

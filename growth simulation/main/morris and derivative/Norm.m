@@ -10,13 +10,16 @@ function [rate,miu] = Norm(Max,Min,miu_num,times,Miu,Sigma)
         end
         for i=1:miu_num
             sigma(1,i)=(Max-miu(i))/3; % 认为μ较大时μ+3σ=max。
-            if miu-3*sigma<0
-                sigma(1,i)=miu/3; % 认为μ较小时μ-3σ=0。
+            if miu-3*sigma<Min
+                sigma(1,i)=(miu-Min)/3; % 认为μ较小时μ-3σ=Min。
             end
             for j=1:times
                 Rate=normrnd(miu(i),sigma(1,i)); % 进行正态分布取值
-                if Rate<0 
-                    Rate=0; % 小于0的速率纠正为0
+                if Rate<Min 
+                    Rate=Min; % 小于Min的速率纠正为Min
+                end
+                if Rate>Max
+                    Rate=Max; % 大于Max的速率纠正为Max
                 end
 %                 for k=1:inf % 小于0的速率重新取值
 %                     Rate=normrnd(miu(i),sigma(1,i));
