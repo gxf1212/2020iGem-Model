@@ -1,5 +1,5 @@
 % plot multi curves in one figure, describing many variables
-clear;clc;
+clear;clc;clf;
 % parameters are set to global variables
 global r1 r2 m1 m2 Kc1 Kn1 Kp1 Kn2 Kp2 Re1 NPh Nf1 Nf2 Pf Q1c Q1n Q1p Q2c Q2n Q2p
 
@@ -67,10 +67,6 @@ Nf2=Nf2*f_Nf;
 Pf=31.0049e-3/1440;
 % Pf=Pf*1.5;
 
-% pH
-pH0=9.1;
-
-
 %% simulation setup
 % variables
 % biomass, 1 for B.S, 2 for Nostoc
@@ -102,30 +98,40 @@ rc=rc*rho;rn=rn*rho;rp=rp*rho;
 days=15;
 t_max=1440*days; % 1 day=1440 min
 
-%% call the function
+% call the function
 % you should run all cells again to renew parameters
-% clf;
-% num=7; % number of lines
-% var=linspace(r2*0.90,r2*1.10,num); % values of the variable
+clf;
+
+%% initial value of biomass
+% num=20; % number of lines
+% var=linspace(n1*0.01,n1*2,num); % values of the variable
+% % var=linspace(n2*0.01,n2*2,num);
 % for i=1:num
-%     r2=var(i);
+%     i
+%     color1=(1/num)*i;
+%     color2=(1/num)*(num-i/2);
+%     color3=(1/num)*(num-i/3);
+%     color=[color1, color2,color3];
+%     n1=var(i);
+% %     n2=var(i);
 %     [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
 %     figure(1)
 %     subplot(1,2,1)
 %     hold on
-%     plot(time, N1, 'linewidth', 1.5);
-%     title('growth curve of B.S');
+%     plot(time, N1, 'linewidth', 1.5,'color',color);
+%     title('growth curve of B.S when days='+string(days));
 %     xlabel('time/min');
 %     ylabel('biomass concentration/(g\cdot L^{-1})');
-%     str{i}=("r2="+string(r2));
+%     str{i}=("n1="+string(n1));
+% %     str{i}=("n2="+string(n2));
 %     if i==num
 %         legend(str)
 %     end
 %     
 %     subplot(1,2,2)
 %     hold on
-%     plot(time, N2, 'linewidth', 1.5);
-%     title('growth curve of Nostoc');
+%     plot(time, N2, 'linewidth', 1.5,'color',color);
+%     title('growth curve of Nostoc when days='+string(days));
 %     xlabel('time/min');
 %     ylabel('biomass concentration/(g\cdot L^{-1})');
 %     if i==num
@@ -133,25 +139,140 @@ t_max=1440*days; % 1 day=1440 min
 %     end
 % end
 
+%% r2,m1
+% num=7; % number of lines
+% % var=linspace(r2*0.90,r2*1.10,num); % values of the variable
+% var=linspace(m1*0.90,m1*1.10,num); 
+% for i=1:num
+% %     r2=var(i);
+%     m1=var(i);
+%     [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
+%     figure(1)
+%     subplot(1,2,1)
+%     hold on
+%     plot(time, N1, 'linewidth', 1.5);
+%     title('growth curve of B.S when days='+string(days));
+%     xlabel('time/min');
+%     ylabel('biomass concentration/(g\cdot L^{-1})');
+% %     str{i}=("r2="+string(r2));
+%     str{i}=("m1="+string(m1));
+%     if i==num
+%         legend(str)
+%     end
+%     
+%     subplot(1,2,2)
+%     hold on
+%     plot(time, N2, 'linewidth', 1.5);
+%     title('growth curve of Nostoc when days='+string(days));
+%     xlabel('time/min');
+%     ylabel('biomass concentration/(g\cdot L^{-1})');
+%     if i==num
+%         legend(str)
+%     end
+% end
+
+%% K, Q
+% num=10; % number of lines
+% var=linspace(Kn1*0.2,Kn1*2,num); % values of the variable
+% % var=linspace(Kn2*1,Kn2*20,num); % values of the variable
+% for i=1:num
+%     i
+%     color1=(1/num)*i;
+%     color2=(1/num)*(num/1.2-mod(i,round(num/2)));
+%     color3=(1/num)*(num-i/3);
+%     color=[color1, color2,color3];
+%     Kn1=var(i);
+%     [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
+%     figure(1)
+%     subplot(1,2,1)
+%     hold on
+%     plot(time, N1, 'linewidth', 1.5,'color',color);
+%     title('growth curve of B.S when days='+string(days));
+%     xlabel('time/min');
+%     ylabel('biomass concentration/(g\cdot L^{-1})');
+%     str{i}=("Kn1="+string(Kn1));
+% %     str{i}=("Kn2="+string(Kn2));
+%     if i==num
+%         legend(str)
+%     end
+%     
+%     subplot(1,2,2)
+%     hold on
+%     plot(time, N2, 'linewidth', 1.5,'color',color);
+%     title('growth curve of Nostoc when days='+string(days));
+%     xlabel('time/min');
+%     ylabel('biomass concentration/(g\cdot L^{-1})');
+%     if i==num
+%         legend(str)
+%     end
+% end
+
+%% resource: the most update and clear figure
+num=20; % number of lines
+% one=linspace(0.9,1,2)(2);
+% var=linspace(0.5,5,num); % values of the variable
+var=linspace(0.1,2,num);
+% var=linspace(rn,rn,num);
+for i=1:num
+    color1=(1/num)*i;
+    color2=(1/num)*(num/1.2-mod(i,round(num/2)));
+    color3=(1/num)*(num-i/3);
+    color=[color1, color2,color3];
+    r0=var(i)*rn;
+    [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, r0, rp, t_max);
+    
+    figure(1)
+    hold on
+    if num2str(var(i))=='1'
+        plot(time, N1,'--', 'linewidth',1.5,'color',color);
+    else 
+        plot(time, N1, 'linewidth', 1.5,'color',color);
+    end 
+    title('growth curve of B.S when days='+string(days))
+    xlabel('time/min');
+    ylabel('biomass concentration/(g\cdot L^{-1})');
+    str{i}=("rn="+string(r0)); % always need to change!
+    if i==num
+%         legend(str) % matlab is weak in legend typesetting!
+        columnlegend(2,str);
+    end
+    
+    figure(2)
+    hold on
+    if num2str(var(i))=='1'
+        plot(time, N2,'--', 'linewidth', 1.5,'color',color);
+    else
+        plot(time, N2, 'linewidth', 1.5,'color',color);
+    end
+    title('growth curve of Nostoc when days='+string(days));
+    xlabel('time/min');
+    ylabel('biomass concentration/(g\cdot L^{-1})');
+    if i==num
+%         legend(str)
+        columnlegend(2,str);
+    end
+end
+
+%% P and Nf1
 % num=7;
 % var=linspace(Nf1*0.95,Nf1*1.05,num);
-% for i=1:length(var)
+% for i=1:num
 %     Nf1=var(i);
 %     [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
-%     nf=string(Nf1*10^4)+'* 10^{-4}';
 %     figure(1)
 %     hold on
+%     ti=sprintf('Nf1=%e',Nf1);
+%     title(['f of B.S when ',ti]);
 %     subplot(3,3,i)
 %     pl3_3f=plot(time, G1./N1/r1, 'o','MarkerSize', 1.5);
 %     pl3_3r=plot(time, MM(Rc, Kc1, N1), time, MM(Rn, Kn1, N1), time, MM(Rp, Kp1, N1));
 %     legend('f','C','N','P')
-%     title('f of B.S when Nf1='+nf);
 %     xlabel('time/min');
 %     figure(2)
 %     hold on
 %     plot(time, Rp, 'linewidth', 1.5);
 %     title('P concentration');
-%     str{i}=['Nf1='+nf];
+%     str{i}=[ti];
 %     xlabel('time/min');
 %     ylabel('biomass concentration/(g\cdot L^{-1})');
 % end

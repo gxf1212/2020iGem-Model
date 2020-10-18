@@ -88,7 +88,7 @@ rc=7.2e-3;rn=2.6e-4;rp=8.88e-7;rho=1.426e3;
 % plants
 % rc=2.35e-2;rn=2.8e-4;rp=3.676e-6;rho=1.446e3;
 
-% rc=rc/1.724; % I forget why?
+rc=rc/1.724; % I forget why?
 rn=rn*0.05; % avalible N (inorganic and low-molecular-weight organic)
 % rp = rp / 0.06  % just use soluble P
 
@@ -104,24 +104,35 @@ days=5;
 t_max=1440*days; % 1 day=1440 min
 
 %% simulation setup
-Pfmax=31.0049/1440/1000; % 溶磷最大速率
-Pfmin=Pfmax*0.1; % 溶磷最小速率
-Pfmax=Pfmax*4;
+% varsmax=31.0049/1440/1000; % 溶磷最大速率
+% varsmin=varsmax*0.1; % 溶磷最小速率
+% varsmax=varsmax*4;
 % assign random values
-miu_num=100; % 共检测μ的数量
-times=1; % 每个μ正态随机取样点的个数
-% PF: miu_num*times, storing all random values
+% miu_num=100; % 共检测μ的数量
+% times=1; % 每个μ正态随机取样点的个数
+% vars: miu_num*times, storing all random values
 % miu: 1*miu_num, storing all mu
 % using min and max
-% [PF,miu]=Norm(Pfmax,Pfmin,miu_num,times,-1,-1); % 获得所有的μ和对应的溶磷速率矩阵
+% [vars,miu]=Norm(varsmax,varsmin,miu_num,times,-1,-1); % 获得所有的μ和对应的溶磷速率矩阵
 % assign mu and sigma
-% [PF,miu]=Norm(-1,-1,1,1,Pfmax/2, Pfmax/10);
+% [vars,miu]=Norm(-1,-1,1,1,varsmax/2, varsmax/10);
 
-% a linear Pf, to see the parameters
+varsmax=m1*1.2; % 溶磷最大速率
+varsmin=m1*0.8; % 溶磷最小速率
+% assign random values
+miu_num=200; % 共检测μ的数量
+times=1; % 每个μ正态随机取样点的个数
+% vars: miu_num*times, storing all random values
+% miu: 1*miu_num, storing all mu
+% using min and max
+% [vars,miu]=Norm(varsmax,varsmin,miu_num,times,-1,-1); % 获得所有的μ和对应的溶磷速率矩阵
+% assign mu and sigma
+% [vars,miu]=Norm(-1,-1,1,1,varsmax/2, varsmax/10);
 
-PF=linspace(Pfmin,Pfmax,miu_num);
-miu=linspace(Pfmin,Pfmax,miu_num);
-delta_miu=Pfmax/100000;
+% a linear vars, to see the parameters
+vars=linspace(varsmin,varsmax,miu_num);
+miu=linspace(varsmin,varsmax,miu_num);
+delta_miu=varsmax/100000;
 
 % 为了加快画图速度，也方便debug，特引入以下数组（用内存换时间）
 t=zeros(1,miu_num*times); % 储存自变量
@@ -136,7 +147,7 @@ derivative_2=zeros(1,miu_num*times); % 储存第二个图的导数
 
 for i=1:miu_num    
     t(1,i)=miu(i); % 储存对应的μ值
-    [derivative_1(1,i),derivative_2(1,i),Biomass_1(1,i),Biomass_2(1,i),biomass_1(1,i),biomass_2(1,i),delta_1(1,i),delta_2(1,i)]=Derivative(delta_miu,PF(i)); % 计算导数
+    [derivative_1(1,i),derivative_2(1,i),Biomass_1(1,i),Biomass_2(1,i),biomass_1(1,i),biomass_2(1,i),delta_1(1,i),delta_2(1,i)]=DerivativeContinuous(delta_miu,vars(i)); % 计算导数
 end
 
 %% 画图
@@ -144,13 +155,13 @@ figure(1)
 subplot(1,2,1)
 plot(t,biomass_1);
 subplot(1,2,2)
-plot(t,derivative_1);
+scatter(t,derivative_1,'*');  % ,'size','0.5'
 
 figure(2)
 subplot(1,2,1)
 plot(t,biomass_2);
 subplot(1,2,2)
-plot(t,derivative_2);
+scatter(t,derivative_2,'*');
 
 %% 标明图例
 for i=1:2

@@ -1,5 +1,5 @@
 % main for growth simulation
-% real parameters
+% real parameters, simple and full simulation
 % unit of time is min^{-1} in accord with those of rates
 % rates per biomass, Ks are deminsionless?
 % we assume that the unit of N is g/L
@@ -16,16 +16,11 @@ r1=log(2)/30;
 r2=0.035/60;
 m1=0.196/60; % 14.812 min^{-1} 
 m2=0.0035/60;
-
 r2=r2*1.13;
-% m2=0.00;
+
+% m1=m1*0.95;
 % r2=r2*0.34;
 % m2=m2*0.34;
-
-
-% toxinic supression, gamma, unit: (g/L)^{-2}
-ga1=1; % 2 on 1
-ga2=1;
 
 % half-saturation constants, unit: L^{-1}
 % B. S
@@ -67,7 +62,8 @@ NPh=4.41e-3*12.01*I/(165+I+I^2/457); % 0.0103
 NPh=NPh*f_Ph;
 % bacteria, N decomposition
 Nf1=2.600e-4;
-% Nf1=2.65e-4;
+% Nf1=2.5e-4;
+% Nf1=2.202e-4;
 % Nf1=0;
 % Nostoc N_fixation, 1.72+-0.25 fmol N/cell/h，estimated single cell weight
 Nf2=1.72e-15*14.01/60*(7722e6/0.42); 
@@ -77,7 +73,6 @@ Nf2=Nf2*f_Nf;
 % Pf=8.87e-4/1440+0; 
 % Pf=Pf*10;
 Pf=31.0049e-3/1440;
-% Pf=Pf*1.5;
 
 % pH
 pH0=9.1;
@@ -99,7 +94,7 @@ rc=7.2e-3;rn=2.6e-4;rp=8.88e-7;rho=1.426e3;
 % plants
 % rc=2.35e-2;rn=2.8e-4;rp=3.676e-6;rho=1.446e3;
 
-% rc=rc/1.724; % organic carbon
+rc=rc/1.724; % organic carbon
 rn=rn*0.05; % avalible N (inorganic and low-molecular-weight organic)
 % rp = rp / 0.06  % just use soluble P
 
@@ -110,52 +105,99 @@ rc=rc*rho;rn=rn*rho;rp=rp*rho;
 % option 2: trial concentration
 % rc=0.02;rn=0.001;rp=0.001;rho=1.33e3;
 
+% option 3: cultural medium * 2
+% 1 and 2 now means type of medium culture
+% % concentration or percentage
+% cm1=1;cm2=1;
+% % mass fraction
+% rc1=1;rn1=1;rp1=1;
+% rc2=1;rn2=1;rp2=1;
+% % mixture
+% rc=cm1*rc1+cm2+rc2;
+% rn=cm1*rn1+cm2+rn2;
+% rp=cm1*rp1+cm2+rp2;
+
 % days=60;
-days=10;
+days=5;
 t_max=1440*days; % 1 day=1440 min
 
 %% call the function
-clf;
-num=7; % number of lines
-var=linspace(r2*0.95,r2*1.05,num);
-for r2=var
-    [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
-    figure(1)
-    hold on
-    subplot(1,2,1)
-    plot(time, N1, 'linewidth', 1.5);
-    title('growth curve of B.S');
-    xlabel('time/min');
-    ylabel('biomass concentration/(g\cdot L^{-1})');
-    legend("r2="+string(r2))
-    subplot(1,2,2)
-    plot(time, N2, 'linewidth', 1.5);
-    title('growth curve of Nostoc');
-    xlabel('time/min');
-    ylabel('biomass concentration/(g\cdot L^{-1})');
-    legend("r2="+string(r2))
+num1=10;num2=10;
+% var1=linspace(Nf1*0.9,Nf1*1.00,num1); % Nf1
+% var2=linspace(Pf/4,Pf/4*5,num1); % Pf
+var1=linspace(rn*0.6,rn*1.5,num1); % rn
+var2=linspace(rp*1,rp*10,num2);
+
+% var1=linspace(n1*0.1,n1*2,num1); % n1
+% var2=linspace(n2*0.1,n2*2,num1);
+% num1=10;num2=10;
+% var1=linspace(n1*0.05,n1*0.5,num1); % Nf1
+% var2=linspace(n2*0.05,n2*0.5,num1);
+
+biomass=zeros(num1,num2,2);
+for i=1:num1
+    for j=1:num2
+        fprintf('i=%d, j=%d\n',i,j);
+%         Nf1=var1(i);
+%         Pf=var2(j);
+%         n1=var1(i);
+%         n2=var2(j);
+        rn=var1(i);
+        rp=var2(j);
+        [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
+        biomass(i,j,1)=N1(t_max);
+        biomass(i,j,2)=N2(t_max);
+    end
 end
 
-% num=7;
-% var=linspace(Nf1*0.95,Nf1*1.05,num);
-% for i=1:length(var)
-%     Nf1=var(i);
-%     [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
-%     nf=string(Nf1*10^4)+'* 10^{-4}';
-%     figure(1)
-%     hold on
-%     subplot(3,3,i)
-%     pl3_3f=plot(time, G1./N1/r1, 'o','MarkerSize', 1.5);
-%     pl3_3r=plot(time, MM(Rc, Kc1, N1), time, MM(Rn, Kn1, N1), time, MM(Rp, Kp1, N1));
-%     legend('f','C','N','P')
-%     title('f of B.S when Nf1='+nf);
-%     xlabel('time/min');
-%     figure(2)
-%     hold on
-%     plot(time, Rp, 'linewidth', 1.5);
-%     title('P concentration');
-%     str{i}=['Nf1='+nf];
-%     xlabel('time/min');
-%     ylabel('biomass concentration/(g\cdot L^{-1})');
-% end
-% legend(str)
+%% plot
+clc;clf;
+
+[x,y]=meshgrid(var1,var2);
+figure(1)
+% BS
+subplot(1,2,1)
+hold on
+mesh(x,y,biomass(:,:,1));
+scatter3(var1(5),var2(1),biomass(5,1,1),'*');
+title('B.S biomass')
+xlabel('var1')
+ylabel('var2')
+hold on
+% idx=30; % fix n1 and see the curve
+% % n10=var1(idx); 
+% % plot3(x(:,idx),y(:,idx),biomass(:,idx,1),'r*');
+% n20=var2(idx); 
+% plot3(x(idx,:),y(idx,:),biomass(idx,:,1),'r*');
+% zlim([0,0.1]);
+
+% Nostoc
+subplot(1,2,2)
+hold on
+mesh(x,y,biomass(:,:,2));
+plot3(var1(5),var2(1),biomass(5,1,2));
+title('Nostoc biomass')
+xlabel('var1')
+ylabel('var2')
+% zlim([0.6,0.8]);
+
+evaluate=zeros(num1,num2);
+coef=[3;3;1;1];
+for i=1:num1
+    for j=1:num2
+        evaluate(i,j)=[biomass(i,j,1) biomass(i,j,2) var1(i) var2(j)]*coef;
+    end
+end
+
+figure(2)
+mesh(x,y,evaluate);
+title('evaluation function')
+xlabel('var1')
+ylabel('var2')
+
+
+
+
+
+
+
