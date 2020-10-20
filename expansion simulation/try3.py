@@ -18,17 +18,17 @@ dtype='int16'
 4 for nutrition
 5 for EPS content
 '''
-n = 15  # size
-epoch = 24  # number of period. more causes NaN??
+n = 25  # size
+epoch = 50  # number of period. more causes NaN??
 probs_migration = [0.02, 0.02, 0.02, 0.02]  # diffusion coefficient
 weight = [[1, 1, 1], [1, 1, 1]]  # cell, EPS and nutrient on migration
-params_BS = (0.3, 0.03, 0.1, 0.5, 1000)  # growth, to spores, nutrient consumption, rps production, carrying capacity
-params_No = (0.3, 0.03, -0.1, 0.5, 1000)
+params_BS = (0.1, 0.03, 0.1, 0.5, 1000)  # growth, to spores, nutrient consumption, rps production, carrying capacity
+params_No = (0.1, 0.03, -0.1, 0.5, 1000)
 
 # the init_simple2d added a dimension to a state, which fits the original evolution function
 # put a state 2 cell in the center, but we can write our own
 # each time I run the simulation, state_init changed ????! have to put it here
-state_init = init_classic_center(n, num=(500, 500, 200, 1000), dtype=dtype)
+state_init = init_classic_center(n, num=(200, 200, 200, 1000), dtype=dtype)
 states_epoch, states_phase = stimulation_v3(n=n, state_init=state_init, grid='rect_Moore',
                                             # rect_Moore, rect_Neumann, hexagonal
                                             epoch=epoch, see_phase=False,
@@ -39,13 +39,12 @@ states_epoch, states_phase = stimulation_v3(n=n, state_init=state_init, grid='re
 
 # %% result
 # a dynamic graph, repeat playing
-idx = 5
+idx = 3
 # my_plot2d_animate(states_epoch, idx=idx, interval=600)  # each epoch costs "interval" millisecond
 my_plot2d_animate(states_epoch, idx=idx, interval=400)
 
 
-# %%
-# for debugging purposes
+# %% for debugging purposes
 
 # time = 20
 time = -1

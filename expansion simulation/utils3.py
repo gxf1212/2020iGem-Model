@@ -1,7 +1,6 @@
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
 
 # we call the cell in CA "square" to distinguish from biological "cell"
 global ELE
@@ -347,7 +346,7 @@ def update_con_push(n, grid, idx_pairs_rand, K, state_update):
     TODO: may add "action at a distance" (超距作用), if some consecutive cells exceed K, they just push the outest one
     to replace max_iter
     """
-    max_iter = 20  # if the cells are crowded, they need a few iterations to achieve <= K
+    max_iter = 100  # if the cells are crowded, they need a few iterations to achieve <= K
     for t in range(max_iter):  # try to iterate until all parallelograms' values < K[i]
         for i in [0, 1]:
             big = [idx_pair for idx_pair in idx_pairs_rand if state_update[i][idx_pair] > K[i]]  # find the bigger idxes
@@ -394,12 +393,14 @@ def update_con_nutrient(state_update, l, y, p, ratio_BN, dtype):
     state_update[0] += num_rec1
     # the same for No, but rely on a ratio
     # if BS is not enough to provide N/P, too low ratio or zero
-    num_spo2 = (state_update[0] / state_update[2] < ratio_BN or state_update[0] == 0)\
-               * np.array(state_update[0] / ratio_BN, dtype)
+    # state_update[0] == 0 or
+    num_spo2 = (state_update[0] < state_update[2] * ratio_BN)\
+               * np.array(state_update[2] - state_update[0] / ratio_BN, dtype)
     state_update[2] -= num_spo2
     state_update[3] += num_spo2
     # if BS is enough
-    num_rec2 = (state_update[0] / (state_update[2] + state_update[3]) > ratio_BN or state_update[0] == 0)\
+    # or state_update[0] == 0
+    num_rec2 = (state_update[0] > (state_update[2] + state_update[3]) * ratio_BN)\
                * np.array(state_update[3] * l[1], dtype)
     state_update[3] -= num_rec2
     state_update[2] += num_rec2
@@ -539,7 +540,7 @@ def my_plot2d_animate(ca, idx=0, title='evolve', interval=50, my_cmap='Greys'):
         i['index'] += 1
         if i['index'] == len(ca):
             i['index'] = 0
-        title = 'evolve at epoch ' + str(i['index'])  # manually set 'epoch' or 'stage'
+        title = 'evolve at epoch ' + str(i['index']) + ' for index ' + str(idx)  # manually set 'epoch' or 'stage'
         ax.set_title(title)
         im.set_array(ca[i['index']][idx])
         return im,
@@ -549,20 +550,30 @@ def my_plot2d_animate(ca, idx=0, title='evolve', interval=50, my_cmap='Greys'):
     plt.show()
 
 
-def my_plot2d(ca, timestep=None, title='', my_cmap='Greys', idx=0):
+def my_plot2d(ca, timestep=None, my_cmap='Greys', idx=0):
     cmap = plt.get_cmap(my_cmap)
     fig = plt.figure(figsize=(9.6, 7.2))
-    plt.title(title)
     if timestep is None:  # maybe the input is a single-time state
         data = ca[idx]
+        title = 'evolve for index ' + str(idx)
     else:
         data = ca[timestep][idx]
+        title = 'evolve at epoch ' + str(timestep) + ' for index ' + str(idx)
+    plt.title(title)
     plt.imshow(data, interpolation='none', cmap=cmap)
     plt.colorbar(ticks=get_ticks(np.max(data)))
 
 
-def get_ticks(max, sep=1000):
+def get_ticks(max, sep=None):
+    if sep is None:
+        if max < 600:
+            sep = 100
+        else:
+            if max < 1200:
+                sep = 200
+            else:
+                sep = 1000
     ticks = list(sep * np.arange(int(max / sep) + 1))
     if max > ticks[-1] + 0.1 * sep:  # to avoid the situation that max is a little bigger than the biggest tick
         ticks = ticks + [max]
-    return [0] + ticks
+    return ticks  # [0] + ?

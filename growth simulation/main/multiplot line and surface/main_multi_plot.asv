@@ -8,12 +8,7 @@ r1=log(2)/30;
 r2=0.035/60;
 m1=0.196/60; % 14.812 min^{-1} 
 m2=0.0035/60;
-
 r2=r2*1.13;
-% m2=0.00;
-% r2=r2*0.34;
-% m2=m2*0.34;
-
 
 % half-saturation constants, unit: L^{-1}
 % B. S
@@ -83,7 +78,7 @@ rc=7.2e-3;rn=2.6e-4;rp=8.88e-7;rho=1.426e3;
 % plants
 % rc=2.35e-2;rn=2.8e-4;rp=3.676e-6;rho=1.446e3;
 
-% rc=rc/1.724; % organic carbon
+rc=rc/1.724; % organic carbon
 rn=rn*0.05; % avalible N (inorganic and low-molecular-weight organic)
 % rp = rp / 0.06  % just use soluble P
 
@@ -94,52 +89,69 @@ rc=rc*rho;rn=rn*rho;rp=rp*rho;
 % option 2: trial concentration
 % rc=0.02;rn=0.001;rp=0.001;rho=1.33e3;
 
-% days=60;
-days=15;
-t_max=1440*days; % 1 day=1440 min
-
 % call the function
 % you should run all cells again to renew parameters
 clf;
 
-%% initial value of biomass
+%% n1,n2
+% days=60;
+% days=5;
+% t_max=1440*days; % 1 day=1440 min
 % num=20; % number of lines
-% var=linspace(n1*0.01,n1*2,num); % values of the variable
-% % var=linspace(n2*0.01,n2*2,num);
+% var1=linspace(n1*0.01,n1*2,num); % values of the variable
+% var2=linspace(n2*0.01,n2*2,num);
+
+% days=5;
+% num=20; % number of lines
+% % var=linspace(0.5,5,num); % values of the variable
+% % var=linspace(rn,rn,num);
+% var=linspace(0.1,2,num);
+% 
+% Kp=Kp1; % record global variable Kp
 % for i=1:num
-%     i
 %     color1=(1/num)*i;
-%     color2=(1/num)*(num-i/2);
+%     color2=(1/num)*(num/1.2-mod(i,round(num/2)));
 %     color3=(1/num)*(num-i/3);
 %     color=[color1, color2,color3];
-%     n1=var(i);
-% %     n2=var(i);
+%     Kp1=var(i)*Kp;
 %     [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
+%     
 %     figure(1)
-%     subplot(1,2,1)
 %     hold on
-%     plot(time, N1, 'linewidth', 1.5,'color',color);
-%     title('growth curve of B.S when days='+string(days));
+%     if num2str(var(i))=='1'
+%         plot(time, N1,'--', 'linewidth',1.5,'color',color);
+%     else 
+%         plot(time, N1, 'linewidth', 1.5,'color',color);
+%     end 
+%     title('growth curve of B.S when days='+string(days))
 %     xlabel('time/min');
 %     ylabel('biomass concentration/(g\cdot L^{-1})');
-%     str{i}=("n1="+string(n1));
-% %     str{i}=("n2="+string(n2));
+%     str{i}=("rn="+string(Kp1)); % always need to change!
 %     if i==num
-%         legend(str)
+% %         legend(str) % matlab is weak in legend typesetting!
+%         columnlegend(2,str);
 %     end
 %     
-%     subplot(1,2,2)
+%     figure(2)
 %     hold on
-%     plot(time, N2, 'linewidth', 1.5,'color',color);
+%     if num2str(var(i))=='1'
+%         plot(time, N2,'--', 'linewidth', 1.5,'color',color);
+%     else
+%         plot(time, N2, 'linewidth', 1.5,'color',color);
+%     end
 %     title('growth curve of Nostoc when days='+string(days));
 %     xlabel('time/min');
 %     ylabel('biomass concentration/(g\cdot L^{-1})');
 %     if i==num
-%         legend(str)
+% %         legend(str)
+%         columnlegend(2,str);
 %     end
 % end
 
 %% r2,m1
+% days=60;
+% days=5;
+% t_max=1440*days; % 1 day=1440 min
 % num=7; % number of lines
 % % var=linspace(r2*0.90,r2*1.10,num); % values of the variable
 % var=linspace(m1*0.90,m1*1.10,num); 
@@ -172,78 +184,54 @@ clf;
 % end
 
 %% K, Q
-% num=10; % number of lines
-% var=linspace(Kn1*0.2,Kn1*2,num); % values of the variable
-% % var=linspace(Kn2*1,Kn2*20,num); % values of the variable
-% for i=1:num
-%     i
+% days=60;
+days=30;
+t_max=1440*days; % 1 day=1440 min
+num=10; % number of lines
+% var=linspace(0.5,5,num); % values of the variable
+% var=linspace(rn,rn,num);
+var=linspace(0.6,1.5,num);
+
+K=Kn2; % record global variable
+% Q=Q2n;
+for i=1:num
 %     color1=(1/num)*i;
 %     color2=(1/num)*(num/1.2-mod(i,round(num/2)));
 %     color3=(1/num)*(num-i/3);
-%     color=[color1, color2,color3];
-%     Kn1=var(i);
-%     [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
-%     figure(1)
-%     subplot(1,2,1)
-%     hold on
-%     plot(time, N1, 'linewidth', 1.5,'color',color);
-%     title('growth curve of B.S when days='+string(days));
-%     xlabel('time/min');
-%     ylabel('biomass concentration/(g\cdot L^{-1})');
-%     str{i}=("Kn1="+string(Kn1));
-% %     str{i}=("Kn2="+string(Kn2));
-%     if i==num
-%         legend(str)
-%     end
-%     
-%     subplot(1,2,2)
-%     hold on
-%     plot(time, N2, 'linewidth', 1.5,'color',color);
-%     title('growth curve of Nostoc when days='+string(days));
-%     xlabel('time/min');
-%     ylabel('biomass concentration/(g\cdot L^{-1})');
-%     if i==num
-%         legend(str)
-%     end
-% end
-
-%% resource: the most update and clear figure
-num=20; % number of lines
-% one=linspace(0.9,1,2)(2);
-% var=linspace(0.5,5,num); % values of the variable
-var=linspace(0.1,2,num);
-% var=linspace(rn,rn,num);
-for i=1:num
-    color1=(1/num)*i;
-    color2=(1/num)*(num/1.2-mod(i,round(num/2)));
-    color3=(1/num)*(num-i/3);
+%     color1=(1/num)*i*0.9;
+%     color2=(1/num)*i*0.9;
+%     color3=(1/num)*i*0.9;
+    color1=(1/num)*(num-i)*0.9;
+    color2=(1/num)*(num-i)*0.9;
+    color3=1;
     color=[color1, color2,color3];
-    r0=var(i)*rn;
-    [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, r0, rp, t_max);
+    Kn2=var(i)*K;
+%     Q2n=Q*var(i);
+    [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
     
     figure(1)
-    hold on
     if num2str(var(i))=='1'
         plot(time, N1,'--', 'linewidth',1.5,'color',color);
     else 
         plot(time, N1, 'linewidth', 1.5,'color',color);
     end 
+    hold on
     title('growth curve of B.S when days='+string(days))
     xlabel('time/min');
     ylabel('biomass concentration/(g\cdot L^{-1})');
-    str{i}=("rn="+string(r0)); % always need to change!
+    str{i}=("var="+string(Kn2)); % always need to change!
     if i==num
 %         legend(str) % matlab is weak in legend typesetting!
         columnlegend(2,str);
     end
     
     figure(2)
-    hold on
     if num2str(var(i))=='1'
         plot(time, N2,'--', 'linewidth', 1.5,'color',color);
     else
         plot(time, N2, 'linewidth', 1.5,'color',color);
     end
+    hold on
     title('growth curve of Nostoc when days='+string(days));
     xlabel('time/min');
     ylabel('biomass concentration/(g\cdot L^{-1})');
@@ -251,7 +239,83 @@ for i=1:num
 %         legend(str)
         columnlegend(2,str);
     end
+    
+%     figure(3)
+%     if num2str(var(i))=='1'
+%         plot(time, Rp,'--', 'linewidth', 1.5,'color',color);
+%     else
+%         plot(time, Rp, 'linewidth', 1.5,'color',color);
+%     end
+%     hold on
+%     title('P when days='+string(days));
+%     xlabel('time/min');
+%     ylabel('biomass concentration/(g\cdot L^{-1})');
+%     if i==num
+% %         legend(str)
+%         columnlegend(2,str);
+%     end
+
+figure(3)
+if num2str(var(i))=='1'
+    plot(time, Rp,'--', 'linewidth', 1.5,'color',color);
+else
+    plot(time, Rp, 'linewidth', 1.5,'color',color);
 end
+title('P when days='+string(days));
+    xlabel('time/min');
+    ylabel('biomass concentration/(g\cdot L^{-1})');
+    if i==num
+%         legend(str)
+        columnlegend(2,str);
+    end
+    
+end
+
+%% resource: the most update and clear figure
+% num=20; % number of lines
+% % one=linspace(0.9,1,2)(2);
+% % var=linspace(0.5,5,num); % values of the variable
+% var=linspace(0.1,2,num);
+% % var=linspace(rn,rn,num);
+% for i=1:num
+%     color1=(1/num)*i;
+%     color2=(1/num)*(num/1.2-mod(i,round(num/2)));
+%     color3=(1/num)*(num-i/3);
+%     color=[color1, color2,color3];
+%     r0=var(i)*rn;
+%     [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, r0, rp, t_max);
+%     
+%     figure(1)
+%     hold on
+%     if num2str(var(i))=='1'
+%         plot(time, N1,'--', 'linewidth',1.5,'color',color);
+%     else 
+%         plot(time, N1, 'linewidth', 1.5,'color',color);
+%     end 
+%     title('growth curve of B.S when days='+string(days))
+%     xlabel('time/min');
+%     ylabel('biomass concentration/(g\cdot L^{-1})');
+%     str{i}=("rn="+string(r0)); % always need to change!
+%     if i==num
+% %         legend(str) % matlab is weak in legend typesetting!
+%         columnlegend(2,str);
+%     end
+%     
+%     figure(2)
+%     hold on
+%     if num2str(var(i))=='1'
+%         plot(time, N2,'--', 'linewidth', 1.5,'color',color);
+%     else
+%         plot(time, N2, 'linewidth', 1.5,'color',color);
+%     end
+%     title('growth curve of Nostoc when days='+string(days));
+%     xlabel('time/min');
+%     ylabel('biomass concentration/(g\cdot L^{-1})');
+%     if i==num
+% %         legend(str)
+%         columnlegend(2,str);
+%     end
+% end
 
 %% P and Nf1
 % num=7;
