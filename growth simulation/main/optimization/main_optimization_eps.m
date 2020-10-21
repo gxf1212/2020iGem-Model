@@ -118,7 +118,7 @@ rc=rc*rho;rn=rn*rho;rp=rp*rho;
 % rp=cm1*rp1+cm2+rp2;
 
 % eps params
-alpha1=1.2071;
+alpha1=1.4071;
 beta1=0.0093;
 alpha2=10.1682;
 beta2=0.0057;
