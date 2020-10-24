@@ -18,9 +18,9 @@ dtype = 'int16'
 5 for EPS content
 '''
 n = 25  # size
-epoch = 100  # number of period. more causes NaN??
-# epoch = 20
-probs_migration = [0.02, 0.02, 0.002, 0.02]  # diffusion coefficient
+# epoch = 100  # number of period. more causes NaN??
+epoch = 40
+probs_migration = [0.02, 0.008, 0.002, 0.02]  # diffusion coefficient
 weight = [[1, 0.05, 1], [1, 0.05, 1]]  # cell, EPS and nutrient on migration
 # stable params
 # growth, to spores, nutrient consumption, rps production (with N), carrying capacity
@@ -31,7 +31,7 @@ weight = [[1, 0.05, 1], [1, 0.05, 1]]  # cell, EPS and nutrient on migration
 # real params
 # these params should be proportional to the original
 # growth/decay rate: *20
-params_BS = (0.40, 0.057, 0.1, 0.5, 1000)
+params_BS = (0.35, 0.05, 0.1, 0.5, 1000)
 params_No = (0.01, 0.001, -0.1, 0.5, 1000)
 
 # alpha1=1.4071;
@@ -48,7 +48,7 @@ notes:
 # the init_simple2d added a dimension to a state, which fits the original evolution function
 # put a state 2 cell in the center, but we can write our own
 # each time I run the simulation, state_init changed ????! have to put it here
-state_init = init_classic_center(n, num=(200, 200, 100, 1000), dtype=dtype)
+state_init = init_classic_center(n, num=(100, 200, 50, 500), dtype=dtype)
 states_epoch, states_phase = stimulation_v3(n=n, state_init=state_init, grid='rect_Moore',
                                             # rect_Moore, rect_Neumann, hexagonal
                                             epoch=epoch, see_phase=False,

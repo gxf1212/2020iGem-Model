@@ -20,6 +20,7 @@ global ga1 ga2
 
 % step=0.1;
 step=1;
+% step=10;
 time=0+step:step:t_max; 
 for t=time
 %     t

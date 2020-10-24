@@ -107,63 +107,71 @@ rc=rc*rho;rn=rn*rho;rp=rp*rho;
 % rn=cm1*rn1+cm2+rn2;
 % rp=cm1*rp1+cm2+rp2;
 
-% days=15;
-days=5;
+days=15;
+% days=5;
 t_max=1440*days; % 1 day=1440 min
 
-num1=20;num2=20;
+% num1=20;num2=20;
 % var1=linspace(Nf1*0.9,Nf1*1.00,num1); % Nf1
 % var2=linspace(Pf/4,Pf/4*5,num2); % Pf
 % var1=linspace(rn*0.6,rn*1.5,num1); % rn,rp
 % var2=linspace(rp*1,rp*10,num2);
-var1=linspace(Kp1*0.6,Kp1*2.5,num1); % Kp
-var2=linspace(Kp2*0.6,Kp2*2.5,num2);
+% var1=linspace(Kp1*0.6,Kp1*2.5,num1); % Kp
+% var2=linspace(Kp2*0.6,Kp2*2.5,num2);
 % var1=linspace(Kn1*0.6,Kn1*2.5,num1); % Kn
 % var2=linspace(Kn2*0.6,Kn2*2.5,num2);
 
-% num1=40;num2=40;
-% var1=linspace(n1*0.1,n1*4,num1); % n1
-% var2=linspace(n2*0.1,n2*4,num2);
+num1=60;num2=60;
+var1=linspace(n1*0.1,n1*6,num1); % n1
+var2=linspace(n2*0.1,n2*6,num2);
 % num1=10;num2=10;
 % var1=linspace(n1*0.05,n1*0.5,num1); % n1
 % var2=linspace(n2*0.05,n2*0.5,num2);
 
 biomass=zeros(num1,num2,2);
-[x,y]=meshgrid(var1,var2);
 
 %% simple version, without EPS
-for i=1:num1
-    for j=1:num2
-        fprintf('i=%d, j=%d\n',i,j);
-%         Nf1=var1(i);
-%         Pf=var2(j);
+% for i=1:num1
+%     for j=1:num2
+%         fprintf('i=%d, j=%d\n',i,j);
+% %         Nf1=var1(i);
+% %         Pf=var2(j);
 %         n1=var1(i);
 %         n2=var2(j);
-%         rn=var1(i);
-%         rp=var2(j);
-        Kp1=var1(i);
-        Kp2=var2(j); 
-%         Kn1=x(i,j);
-%         Kn2=y(i,j); 
-        [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
-        biomass(i,j,1)=N1(t_max);
-        biomass(i,j,2)=N2(t_max);
-    end
-end
+% %         rn=var1(i);
+% %         rp=var2(j);
+% %         Kp1=var1(i);
+% %         Kp2=var2(j); 
+% %         Kn1=x(i,j);
+% %         Kn2=y(i,j); 
+%         [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
+%         biomass(i,j,1)=N1(t_max);
+%         biomass(i,j,2)=N2(t_max);
+%     end
+% end
 
 %% plot
 clc;clf;
 
+biomass=load('data_init').biomass;
+[x,y]=meshgrid(var1,var2);
+
 figure(1)
-title('Kp1,Kp2')
+% title('Kp1,Kp2')
+title('adjusting initial biomass concentration')
 % BS
-subplot(1,2,1)
+% subplot(1,2,1)
+set(gcf,'position',[0.2,0.2,500,500]);
 mesh(x,y,biomass(:,:,1));
+set(gca,'XColor','#999999') 
+set(gca,'YColor','#999999') 
+set(gca,'ZColor','#999999')
+export_fig surface -transparent;
 % hold on
 % scatter3(var1(5),var2(1),biomass(5,1,1),'*');
-title('B.S biomass when days='+string(days))
-xlabel('var1')
-ylabel('var2')
+% title('B.S biomass when days='+string(days))
+% xlabel('n_1')
+% ylabel('n_2')
 % hold on
 % idx=30; % fix n1 and see the curve
 % % n10=var1(idx); 
@@ -173,16 +181,20 @@ ylabel('var2')
 % zlim([0,0.1]);
 
 % Nostoc
-subplot(1,2,2)
+% subplot(1,2,2)
+figure(2)
 mesh(x,y,biomass(:,:,2));
+set(gca,'XColor','#999999') 
+set(gca,'YColor','#999999') 
+set(gca,'ZColor','#999999') 
 % hold on
 % plot3(var1(5),var2(1),biomass(5,1,2));
-title('Nostoc biomass when days='+string(days))
-xlabel('var1')
-ylabel('var2')
+% title('Nostoc biomass when days='+string(days))
+% xlabel('n1')
+% ylabel('n2')
 % zlim([0.6,0.8]);
 
-figure(2)
+% figure(2)
 % b1=reshape(biomass(:,:,1),[num1*num2,1]);
 % b2=reshape(biomass(:,:,2),[num1*num2,1]);
 % scatter(b1,b2,'*');
@@ -190,15 +202,36 @@ figure(2)
 % xlabel('B.S')
 % ylabel('Nostoc')
 % all over the figure. meaningless
-for i=1:num1
-% for j=1:num2
-    color1=(1/num1)*i;
-    color2=(1/num1)*(num1/1.2-mod(i,round(num1/2)));
-    color3=(1/num1)*(num1-i/3);
-    color=[color1, color2,color3];
-    hold on
-    plot(biomass(i,:,1),biomass(i,:,2),'color',color);
-end
-title('phase graph of biomass, each line for a fixed n1 when days='+string(days))
-xlabel('B.S')
-ylabel('Nostoc')
+
+% for i=1:num1
+% % for j=1:num2
+%     color1=(1/num1)*i;
+%     color2=(1/num1)*(num1/1.2-mod(i,round(num1/2)));
+%     color3=(1/num1)*(num1-i/3);
+%     color=[color1, color2,color3];
+%     hold on
+%     plot(biomass(i,:,1),biomass(i,:,2),'color',color);
+% end
+% title('phase graph of biomass, each line for a fixed n1 when days='+string(days))
+% xlabel('B.S')
+% ylabel('Nostoc')
+
+
+% subplot(1,2,1)
+% surf(x,y,biomass(:,:,1));
+% shading interp;
+% title('B.S biomass when days='+string(days))
+% xlabel('n_1')
+% ylabel('n_2')
+% 
+% subplot(1,2,2)
+% surf(x,y,biomass(:,:,2));
+% shading interp;
+% title('Nostoc biomass when days='+string(days))
+% xlabel('n_1')
+% ylabel('n_2')
+
+figure()
+
+%%
+save('data_init','biomass');

@@ -128,7 +128,7 @@ params=[alpha1 beta1 alpha2 beta2];
 
 %% call the function
 % days=60;
-days=10;
+days=20;
 t_max=1440*days; % 1 day=1440 min
 [N1, N2, Rc, Rn, Rp, time, G1, G2,E1,E2]=numerical_simulation_eps(n1, n2, rc, rn, rp, t_max,params);
 

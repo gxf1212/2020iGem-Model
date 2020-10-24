@@ -186,17 +186,16 @@ clf;
 %% K, Q
 clf;
 % days=60;
-days=10;
+days=20;
 t_max=1440*days; % 1 day=1440 min
 num=7; % number of lines
 % var=linspace(0.5,5,num); % values of the variable
-% var=linspace(rn,rn,num);
 var=linspace(0.6,1.5,num);
 
 % K=Kn1; % record global variable
 % Q=Q2n;
-% ra=Nf1;
-ra=Pf;
+ra=Nf1;
+% ra=Pf;
 for i=1:num
 %     color1=(1/num)*i;
 %     color2=(1/num)*(num/1.2-mod(i,round(num/2)));
@@ -209,11 +208,12 @@ for i=1:num
     color3=1;
     color=[color1, color2,color3];
 %     Kn1=var(i)*K;
-%     Q2n=Q*var(i);
-    Pf=ra*var(i);
+%     Q2n=var(i)*K;
+    Nf1=ra*var(i);
+%     Pf=ra*var(i);
     [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
     
-    figure(1)
+    figure()
     if num2str(var(i))=='1'
         plot(time, N1,'--', 'linewidth',1.5,'color',color);
     else 
@@ -223,13 +223,14 @@ for i=1:num
     title('growth curve of B.S when days='+string(days))
     xlabel('time/min');
     ylabel('biomass concentration/(g\cdot L^{-1})');
-    str{i}=("Pf="+string(Pf)); % always need to change!
+%     str{i}=("Pf="+string(Pf)); % always need to change!
+    str{i}=("Nf1="+string(Nf1));
     if i==num
-%         legend(str) % matlab is weak in legend typesetting!
+%         legend(str) % all in a column
         columnlegend(2,str);
     end
     
-    figure(2)
+    figure()
     if num2str(var(i))=='1'
         plot(time, N2,'--', 'linewidth', 1.5,'color',color);
     else

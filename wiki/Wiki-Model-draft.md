@@ -73,7 +73,7 @@ In the following equations built on classic **resource competition model**, subs
 | $Death_i=m_i N_i$                                            | Growth and death rates are proportional to current population $N_i$ quantity with a ratio. |
 | $f_i(R)=\min\limits_j\{\dfrac{R_j}{R_j+K_{ij}N_i}\}$         | The constraint factor is built according to **Monod growth kinetics** with Liebig's law of the minimum. |
 | $\dfrac{\mathrm{d}R_j}{\mathrm{d}t}=Income_j-\sum\limits_i Q_{ij} Grow_i$ or $\dfrac{\mathrm{d}N_i}{\mathrm{d}t}$ | The concentration of nutrients are dynamically regulated by production and consumption by microorganisms. |
-|  6    |  $\dfrac{\mathrm{d}N_i}{\mathrm{d}t}=Birth_i(1-\gamma_i N_1N_2) - Death_i$ | In the later stage of the BSC development, the two microorganisms are abundant to inhibit each other's growth by secreting toxin. We use a model proposed by (Effect of toxic substances on a two-species competitive system). |
+|                                                              |                                                              |
 
 
 Here we will detailedly explain our innovation in the last two equations.
