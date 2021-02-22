@@ -2,11 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f5437d0b-a6fa-4ab4-b665-6185cb1dcac0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../../../../expansion simulation/movies/evolve_BS.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../../../expansion simulation/movies/evolve_nutrition.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../../../expansion simulation/movies/evolve_pure.gif" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../../expansion simulation/evolve_pure.gif" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../../expansion simulation/evolve.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../../expansion simulation/initial_values.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../../expansion simulation/movies/v0/evolve_BS.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../../expansion simulation/movies/v0/evolve_nutrition.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../../expansion simulation/movies/v0/evolve_pure.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../../expansion simulation/try3_older.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../../expansion simulation/utils3_older.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../expansion simulation/movies/evolve_BS.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../expansion simulation/movies/evolve_nutrition.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../expansion simulation/movies/evolve_pure.gif" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../../../../expansion simulation/try3.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../expansion simulation/try3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../expansion simulation/utils3.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../expansion simulation/utils3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../../../wiki/Wiki-Model-draft.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../wiki/Wiki-Model-draft.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -108,6 +115,8 @@
       <workItem from="1603420041052" duration="9158000" />
       <workItem from="1603436164704" duration="3746000" />
       <workItem from="1603503393126" duration="1475000" />
+      <workItem from="1603702566113" duration="2606000" />
+      <workItem from="1603708839932" duration="639000" />
     </task>
     <servers />
   </component>
@@ -159,10 +168,10 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="142" y="0" key="SettingsEditor/0.0.1280.680@0.0.1280.680" timestamp="1603436519924" />
-    <state x="303" y="1" width="672" height="678" key="search.everywhere.popup" timestamp="1603422724172">
+    <state x="303" y="1" width="672" height="678" key="search.everywhere.popup" timestamp="1603705060192">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="303" y="1" width="672" height="678" key="search.everywhere.popup/0.0.1280.680@0.0.1280.680" timestamp="1603422724172" />
+    <state x="303" y="1" width="672" height="678" key="search.everywhere.popup/0.0.1280.680@0.0.1280.680" timestamp="1603705060192" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/growth_curve$growth_curve_2.coverage" NAME="growth_curve_2 Coverage Results" MODIFIED="1603430208456" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

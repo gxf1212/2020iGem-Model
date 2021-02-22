@@ -42,7 +42,8 @@ for t=time
 %     else 
 %         rc=rc+(-Re1*n1-Q1c*Grow1-Q2c*(Grow2-m2*n2))*step;
 %     end
-    rc=rc+(-Re1*n1+NPh*n2-Q1c*Grow1-Q2c*(Grow2-m2*n2))*step;
+    rc=rc+(-Re1*n1+NPh*n2-Q1c*Grow1-Q2c*(Grow2-m2*n2))*step-(alpha1*Grow1+beta1*n1+alpha2*Grow2+beta2*n2)*step*0.4;
+%     rc=rc+(-Re1*n1+NPh*n2-Q1c*Grow1-Q2c*(Grow2-m2*n2))*step;
     rn=rn+(Nf1*n1+Nf2*n2-Q1n*Grow1-Q2n*(Grow2-m2*n2))*step;
     rp=rp+(Pf*n1-Q1p*Grow1-Q2p*(Grow2-m2*n2))*step;
     % if dead B.S are decomposed 

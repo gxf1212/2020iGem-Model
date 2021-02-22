@@ -123,12 +123,13 @@ alpha1=1.4071;
 beta1=0.0093;
 alpha2=10.1682;
 beta2=0.0057;
-% ratio=2;alpha1=alpha1*ratio;beta1=beta1*ratio; % project enhancement
+% project enhancement
+% ratio=2;alpha1=alpha1*ratio;beta1=beta1*ratio;
 params=[alpha1 beta1 alpha2 beta2];
 
 %% call the function
 % days=60;
-days=20;
+days=10;
 t_max=1440*days; % 1 day=1440 min
 [N1, N2, Rc, Rn, Rp, time, G1, G2,E1,E2]=numerical_simulation_eps(n1, n2, rc, rn, rp, t_max,params);
 
@@ -199,13 +200,16 @@ legend([pl3_4f, pl3_4r(1), pl3_4r(2)],'f','N','P')
 
 
 figure(4)
-plot(time, E1,time, E2,time, E1+E2,'linewidth',1.5)
-title('eps curve');
+plot(time/1440, E1,time/1440, E2,time/1440, E1+E2,'linewidth',1.5)
+title('EPS curve');
 legend('B.S','Nostoc','total')
-xlabel('time/min');
-ylabel('eps concentration/(g\cdot L^{-1})');
+xlabel('time/days');
+ylabel('EPS concentration/(g\cdot L^{-1})');
 % plot(time, toxin(ga2, N1, N2))
 % legend('B.S','Nostoc')
 
-
-
+% figure(5)
+% title('f of B.S');
+% hold on
+% plot(time, MM(Rc-(E1+E2)*0.4, Kc1, N1));
+% plot(time, (Rc-(E1+E2)*0.4)./(Kc1*N1))

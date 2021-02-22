@@ -8,8 +8,9 @@ global ELE
 ELE = 6  # number of elements in a parallelogram
 dict_cell = {0: "BS", 1: "Nostoc"}  # for outputting information
 
+
 # %% define class cell
-# class Cell(dtype='uint18'):
+# class Cell(dtype='int16'):
 #     '''
 #     # attributes:
 #     b_BS, s_BS: the number of B. subtilis in two states
@@ -102,7 +103,7 @@ def reverse_neighbor_value(idx_pair, nei, state_init):
 
 
 # %% initialization methods
-def init_classic_center(n: int, num=(500, 500, 200, 1000), dtype='uint16'):
+def init_classic_center(n: int, num=(500, 500, 200, 1000), dtype='int16'):
     """
     create initial distribution by putting some bacteria in the center
     :param num: B.S and Nostoc, respectively. only "active" cell.
@@ -112,15 +113,15 @@ def init_classic_center(n: int, num=(500, 500, 200, 1000), dtype='uint16'):
     """
     state0 = np.zeros((ELE, n, n), dtype=dtype)
     for i in [0, 2]:
-        state0[i, int(n / 2), int(n / 2)] = num[int(i/2)]
+        state0[i, int(n / 2), int(n / 2)] = num[int(i / 2)]
     for i in [4, 5]:
-        state0[i] = np.ones(shape=(n, n), dtype=dtype) * num[i-2]
+        state0[i] = np.ones(shape=(n, n), dtype=dtype) * num[i - 2]
     state0[4, int(n / 2), int(n / 2)] += num[0] + num[1]
 
     return state0
 
 
-def init_free(n: int, location=(0, 0), num=(10, 4, 10, 4, 10, 10), dtype='uint16'):
+def init_free(n: int, location=(0, 0), num=(10, 4, 10, 4, 10, 10), dtype='int16'):
     """
     create initial distribution by setting one parallelogram with certain state and number
     if you want to set >1 seeds, please add multiple objects this function returns with different params
@@ -133,7 +134,7 @@ def init_free(n: int, location=(0, 0), num=(10, 4, 10, 4, 10, 10), dtype='uint16
     return state0
 
 
-def init_multi_pos(n:int, idx_pairs, cell_values, eps, nut, dtype='uint16'):
+def init_multi_pos(n: int, idx_pairs, cell_values, eps, nut, dtype='int16'):
     """
     :param idx_pairs: tuple (2). all positions you want to place bacteria
     :param cell_values: tuple (2). according to idx_pairs, BS and No values
@@ -149,6 +150,20 @@ def init_multi_pos(n:int, idx_pairs, cell_values, eps, nut, dtype='uint16'):
     # eps and nutrient
     state0 += init_classic_center(n, (0, 0, eps, nut), dtype)
 
+    return state0
+
+
+def init_random_nutrient(n: int, num=(500, 500, 200, 1000), dtype='int16'):
+    state0 = init_classic_center(n, num, dtype = 'int16')
+    state0[5, :, :] = np.round(state0[5, :, :] * (np.random.randn(n, n) / 9 + 1))
+    return state0
+
+
+def init_directed_nutrient(n: int, num=(500, 500, 200, 1000), dtype='int16'):
+    state0 = init_classic_center(n, num, dtype = 'int16')
+    cen = int(n/2)
+    state0[5, :, :] = np.round(state0[5, :, :] * 0.5)
+    state0[5, :cen, :cen] = np.round(state0[5, :cen, :cen] * 3)
     return state0
 
 
@@ -250,7 +265,8 @@ def update_number_mig(state_update, idx_pair, neighbors, num_migration, ratio_cp
     for nei in neighbors:
         for i in idx:
             # in case num_mig > num_center. directly change the values in this array
-            num_migration[idx.index(i), neighbors.index(nei)] = np.minimum(state_update[i][idx_pair], num_migration[idx.index(i), neighbors.index(nei)])
+            num_migration[idx.index(i), neighbors.index(nei)] = np.minimum(state_update[i][idx_pair], num_migration[
+                idx.index(i), neighbors.index(nei)])
             state_update[i][nei] += num_migration[idx.index(i), neighbors.index(nei)]
             state_update[i][idx_pair] -= num_migration[idx.index(i), neighbors.index(nei)]
 
@@ -259,7 +275,7 @@ def update_number_mig(state_update, idx_pair, neighbors, num_migration, ratio_cp
 
 def update_mig(idx_pairs, n, state_update, state_init, grid,
                probs_migration, weight, ratio_cps,
-               dtype='uint16'):
+               dtype='int16'):
     """
     rectangular/hexagonal share this function
     :param idx_pairs: sequential pairs
@@ -291,7 +307,7 @@ def update_mig(idx_pairs, n, state_update, state_init, grid,
     return state_update, exit_flag
 
 
-#%% consolidation
+# %% consolidation
 def going_out(idx_pair, neighbors, num, state_update):
     """
     redundant cells go out, the mechanism of cell "push"!
@@ -332,11 +348,11 @@ def update_con_grow(idx_pairs_rand, r, K, state_update, ratio=2):
             # if state_update[i][idx_pair] > ratio * K[i]:
             #     grow[idx_pair] = 1  # cell won't grow
             # refined model, the same as continuous model
-            grow[idx_pair] *= 1 - state_update[i][idx_pair] / K[i] / 1.2
+            grow[idx_pair] *= 1 - state_update[i][idx_pair] / K[i] / 1.05
         state_update[i] = state_update[i] * (1 + grow)  # automatically round off
     if np.sum(state_update[i]) / state_update.shape[-1] / state_update.shape[-2] > K[i]:
         print("The total number of " + dict_cell[i] + " cells has exceeded the total carrying capacity. "
-              "\nNo going-out will achieve a balance. Please increase n. Program will exit.")
+                                                      "\nNo going-out will achieve a balance. Please increase n. Program will exit.")
         # return exit = True to go back to function "simulation" and output
         return state_update[0], state_update[1], True
     else:
@@ -384,7 +400,7 @@ def update_con_push(n, grid, idx_pairs_rand, K, state_update):
     TODO: may add "action at a distance" (超距作用), if some consecutive cells exceed K, they just push the outest one
     to replace max_iter
     """
-    max_iter = 20  # if the cells are crowded, they need a few iterations to achieve <= K
+    max_iter = 200  # if the cells are crowded, they need a few iterations to achieve <= K
     for t in range(max_iter):  # try to iterate until all parallelograms' values < K[i]
         for i in [0, 1]:
             big = [idx_pair for idx_pair in idx_pairs_rand if state_update[i][idx_pair] > K[i]]  # find the bigger idxes
@@ -435,13 +451,13 @@ def update_con_nutrient(state_update, l, y, p, ratio_BN, dtype):
     # the same for No, but rely on a ratio
     # if BS is not enough to provide N/P, too low ratio or zero
     # state_update[0] == 0 or
-    num_spo2 = (state_update[0] < state_update[2] * ratio_BN)\
+    num_spo2 = (state_update[0] < state_update[2] * ratio_BN) \
                * np.array(state_update[2] - state_update[0] / ratio_BN, dtype)
     state_update[2] -= num_spo2
     state_update[3] += num_spo2
     # if BS is enough
     # or state_update[0] == 0
-    num_rec2 = (state_update[0] > (state_update[2] + state_update[3]) * ratio_BN)\
+    num_rec2 = (state_update[0] > (state_update[2] + state_update[3]) * ratio_BN) \
                * np.array(state_update[3] * l[1], dtype)
     state_update[3] -= num_rec2
     state_update[2] += num_rec2
@@ -452,7 +468,7 @@ def update_con_nutrient(state_update, l, y, p, ratio_BN, dtype):
 
     # update rps
     for i in [0, 1]:
-        state_update[4] += np.array(state_update[i*2] * p[i], dtype)  # state[2]*p[1]
+        state_update[4] += np.array(state_update[i * 2] * p[i], dtype)  # state[2]*p[1]
         # my_plot2d((state_update[i * 2]-state_init[i*2])*140-state_update[i*2])  # >0 means dN/dt dominates
 
     return state_update
@@ -474,10 +490,11 @@ def update_con(idx_pairs_rand, n, state_update, grid, dtype,
     # if state_init[0][idx_pair] != 0:  # for debugging, find where there are bacteria
     #     print("not empty")
 
+    state_start = state_update.copy()  # for calculating cps
+
     # consume / produce nutrients (carbon) first. some turn into spores after migration and nutrient consumption
     state_update = update_con_nutrient(state_update, (l1, l2), (y1, y2), (p1, p2), ratio_BN, dtype)
 
-    state_start = state_update.copy()  # for calculating cps
     # grow; redundant cells going out. only use states of BS and No
     state_update[0], state_update[2], exit_flag = update_con_grow(idx_pairs_rand, (r1, r2),
                                                                   (K1, K2), state_update[[0, 2]], 2)
@@ -499,7 +516,7 @@ def update_con(idx_pairs_rand, n, state_update, grid, dtype,
 
 # %% main function
 def stimulation_v3(n, grid='rect_Moore', state_init=None, epoch=10,
-                   see_phase=False, dtype='uint16',
+                   see_phase=False, dtype='int16',
                    probs_migration=(0.1, 0.1, 0.1, 0.1), weight=((1, 1, 1), (1, 1, 1), 1, 1),
                    ratio_cps=(1, 1),
                    params_BS=(0.5, 0.05, 1, 0.01, 600, 20), params_No=(0.5, 0.05, 1, 0.01, 600, 20)):
@@ -563,7 +580,7 @@ def stimulation_v3(n, grid='rect_Moore', state_init=None, epoch=10,
             states_phase.append(state_update.copy())
 
         states_epoch.append(state_update)
-        print("The iteration epoch "+str(time)+" has finished normally")
+        print("The iteration epoch " + str(time) + " has finished normally")
 
     return np.array(states_epoch, dtype=dtype), np.array(states_phase, dtype=dtype)
 
@@ -571,9 +588,15 @@ def stimulation_v3(n, grid='rect_Moore', state_init=None, epoch=10,
 # %% visualization
 # see https://matplotlib.org/tutorials/colors/colormaps.html for more colormaps
 def my_plot2d_animate(ca, idx=0, title='evolve', interval=50, my_cmap=None):
-    fig = plt.figure(figsize=(9.6, 7.2))
+    fig = plt.figure(figsize=(6, 4.5), dpi=250)  # for poster
+    # fig = plt.figure(figsize=(9.6, 7.2))
     ax = fig.add_subplot(1, 1, 1)
-
+    font_title = {'family': 'Arial',  # 'Arial', 'times new roman', 'sans-serif', 'Cambria Math', 'Comic Sans MS'
+                  'weight': 1.5,
+                  'size': 16, }
+    font_tick = {'family': 'Arial',  # 'Arial', 'times new roman', 'sans-serif', 'Cambria Math', 'Comic Sans MS'
+                  'weight': 'normal',
+                  'size': 12, }
     # cmap setting
     if my_cmap is None:
         my_cmap = 'viridis'  # default
@@ -584,11 +607,18 @@ def my_plot2d_animate(ca, idx=0, title='evolve', interval=50, my_cmap=None):
         # colors = [(239 / 255, 224 / 255, 203 / 255), (214 / 255, 242 / 255, 217 / 255)]  # try to adjust
         my_cmap = LinearSegmentedColormap.from_list(name='bg', colors=colors)  # , N=n_bin
     cmap = plt.get_cmap(my_cmap)  # color
+    # fig.set_facecolor((218/255,238/255,214/255))  # wiki
+    # fig.set_facecolor((251 / 255, 238 / 255, 201 / 255))  # PPT
 
     im = plt.imshow(ca[0][idx], animated=True, cmap=cmap, vmin=0, vmax=np.max(ca[:, idx]))  # set the value range here!
     fig.colorbar(im)  # , ax=ax; using default color bar setting, but will not change with time to con
     # unsuccessful, our standard ticks, set special values in the bar
     # plt.colorbar(im, cmap=my_cmap, ticks=get_ticks(np.max(ca[:, idx])))
+    a = plt.gca()
+    xlabel = a.get_xticklabels(im)
+    ylabel = a.get_yticklabels(im)
+    a.set_xticklabels(xlabel, fontdict=font_tick)
+    a.set_yticklabels(ylabel, fontdict=font_tick)
     i = {'index': 0}  # because it is used in a newly-defined function
 
     def updatefig(*args):
@@ -596,22 +626,27 @@ def my_plot2d_animate(ca, idx=0, title='evolve', interval=50, my_cmap=None):
         if i['index'] == len(ca):
             i['index'] = 0
         title = 'evolve at epoch ' + str(i['index']) + ' for index ' + str(idx)  # manually set 'epoch' or 'stage'
-        ax.set_title(title)
+        ax.set_title(title, fontdict=font_title)
         im.set_array(ca[i['index']][idx])
         # plt.colorbar(cmap=my_cmap, ticks=get_ticks(np.max(ca[:, idx])))
         # fig.colorbar(im)
+        # plt.rcParams['savefig.facecolor'] = (215 / 255, 239 / 255, 214 / 255)  # wiki
+        # plt.rcParams['savefig.facecolor'] = (251 / 255, 238 / 255, 201 / 255)  # PPT
+        plt.rcParams['savefig.facecolor'] = 'none'  # transparent
+        # no setting means we use white background
         return im,
 
     ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True)
     plt.show()
     # save as a gif file, changing writer resolved the error
     # have to enlarge maximum memory limit
-    # ani.save(filename="evolve.gif", writer='pillow')
+    ani.save(filename="evolve.gif", writer='pillow')  # ,dpi=60
 
 
 def my_plot2d(ca, timestep=None, my_cmap='Greys', idx=0):
     cmap = plt.get_cmap(my_cmap)
     fig = plt.figure(figsize=(9.6, 7.2))
+    fig.set_facecolor('none')
     if ca.ndim == 2:  # maybe the input is a single sheet (timestep is also 0)
         ca = [ca]  # add a dimension
     if timestep is None:  # maybe the input is a single-time state (dim=3)
@@ -624,6 +659,7 @@ def my_plot2d(ca, timestep=None, my_cmap='Greys', idx=0):
     im = plt.imshow(data, interpolation='none', cmap=cmap)
     fig.colorbar(im)  # default ticks
     # plt.colorbar(ticks=get_ticks(np.max(data)))  # our standard ticks
+    # plt.savefig(fname="evolve.png", writer='pillow')
 
 
 def get_ticks(max, sep=None):
@@ -640,4 +676,3 @@ def get_ticks(max, sep=None):
     if max > ticks[-1] + 0.1 * sep:  # to avoid the situation that max is a little bigger than the biggest tick
         ticks = ticks + [max]
     return ticks  # [0] + ?
-

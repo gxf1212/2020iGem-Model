@@ -1,7 +1,8 @@
 import numpy as np
 import xlrd
 import os
-import time
+import pandas as pd
+import csv
 from utils import *
 
 # %% organize files
@@ -21,6 +22,7 @@ files_path, files_time = zip(*zipped)  # unzip
 # %% read data
 time = (files_time-np.min(files_time))/3600  # convert to hour
 value = []
+value_all = []  # all data, before average
 for file in files_path:
     data = xlrd.open_workbook(path+file).sheet_by_index(0)
     v = []
@@ -28,8 +30,26 @@ for file in files_path:
         v.append(data.row_values(i-1, 1, 9))
     v_ave = np.mean(np.array(v), axis=0)  # mean for each file
     value.append(v_ave)
+    value_all.append(np.array(v))
 value = np.array(value)
-# check for abnormal value
+value_all = np.array(value_all)
+
+#%% write data
+# workbook = xlrd.open_workbook(r'./data.xlsx')
+#     writer.writerow(value_all[:,0,:])
+
+for i in range(8):
+    data = pd.DataFrame(value_all[:,:,i])
+    data.to_csv('data'+str(i+1)+'.csv',header = False, index = False)
+
+# with open('data.csv','w') as csvfile:
+#     writer = csv.writer(csvfile)
+#     for i in range(8):
+#         for j in range(3):
+#             writer.writerow(value_all[:, :, i])
+    # np.savetxt('growth.csv', value, delimiter=',')
+
+#%% check for abnormal value
 # plot1(value, time)
 # linear interpolation for index 13,15,23
 for i in [13,15,23]:

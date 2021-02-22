@@ -32,7 +32,7 @@ Kp1=0.057;
 % cyanobacteria
 Kn2=0.050993; % lansijun
 Kp2=0.018739; % tonglvjiadanbao
-Kp1=Kp1*1.5;
+% Kp1=Kp1*1.5;
 
 % Q, constant
 % B. S
@@ -121,7 +121,7 @@ rc=rc*rho;rn=rn*rho;rp=rp*rho;
 
 %% call the function
 % days=60;
-days=5;
+days=15;
 t_max=1440*days; % 1 day=1440 min
 [N1, N2, Rc, Rn, Rp, time, G1, G2]=numerical_simulation(n1, n2, rc, rn, rp, t_max);
 
