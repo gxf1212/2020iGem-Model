@@ -1,4 +1,6 @@
 import scipy
+import math
+import xlwt
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -21,8 +23,8 @@ def mRNAFunction(M, D, k_m, A_in, K_1, K, d_m, d_large, MazF, K_t):
             MazF ** 2 + K_t ** 2) * M
 
 
-def mazfFunction(b_2, M, a_T, MazF, MazE, d_c, d_a2, MazEF):
-    return b_2 * M - a_T * MazF * MazE - d_c * MazF + d_a2 * MazEF
+def mazfFunction(b_2, M, MazF, d_c):
+    return b_2 * M - d_c * MazF
 
 
 def mazeFunction(b_1, M, a_T, MazF, MazE, d_a):
@@ -34,7 +36,7 @@ def mazefFunction(a_T, MazE, MazF, d_c, MazEF, d_a2):
 
 
 def totalModel(y, t, parameters):
-    A_in, E_mRNA, FGH_mRNA, M, MazF, MazE, MazEF = y
+    A_in, E_mRNA, FGH_mRNA, M, MazF = y
     V_e, A_ex, K_e, V_fgh, K_fgh, Mu, Gamma_ain, \
     Alpha_e, V_me, K_me, Gamma_e, \
     Alpha_fgh, V_mfgh, K_mfgh, Gamma_fgh, \
@@ -45,18 +47,17 @@ def totalModel(y, t, parameters):
     _emRNA = araEmRNADynamicsFunction(E_mRNA, Alpha_e, V_me, A_in, K_me, Mu, Gamma_e)
     _fghmRNA = araFGHmRNADynamicsFunction(FGH_mRNA, Alpha_fgh, V_mfgh, A_in, K_mfgh, Mu, Gamma_fgh)
     _mRNA = mRNAFunction(M, D, k_m, A_in, K_1, K, d_m, d_large, MazF, K_t)
-    _maze = mazeFunction(b_1, M, a_T, MazF, MazE, d_a)
-    _mazf = mazfFunction(b_2, M, a_T, MazF, MazE, d_c, d_a2, MazEF)
-    _mazef = mazefFunction(a_T, MazE, MazF, d_c, MazEF, d_a2)
-    return np.array([_ain, _emRNA, _fghmRNA, _mRNA, _mazf, _maze, _mazef])
+    # _maze = mazeFunction(b_1, M, a_T, MazF, MazE, d_a)
+    _mazf = mazfFunction(b_2, M, MazF, d_c)
+    # _mazef = mazefFunction(a_T, MazE, MazF, d_c, MazEF, d_a2)
+    return np.array([_ain, _emRNA, _fghmRNA, _mRNA, _mazf])
 
 
 
-
-
-if '__main__':
+def solve(A_ex):
     V_e = 48
-    A_ex = 1E-7
+    # A_ex = 0
+
     K_e = 1.4E-4
     V_fgh = 4.8
     K_fgh = 6E-6
@@ -71,7 +72,7 @@ if '__main__':
     K_mfgh = 1E-9
     Gamma_fgh = 0.0115
     D = 2
-    k_m = 0.3
+    k_m = 0.03  # it is 0.18/min=0.03/s
     K_1 = 2.52E10
     K = 7200
     d_m = 0.002
@@ -83,42 +84,72 @@ if '__main__':
     d_a2 = 0.000231
     b_1 = 0.122
     d_a = 0.00231
+    A_in = 0
+    E_mRNA = 0
+    FGH_mRNA = 0
+    M = 0
+    MazF = 0
     parameters = [
         V_e, A_ex, K_e, V_fgh, K_fgh, Mu, Gamma_ain,
         Alpha_e, V_me, K_me, Gamma_e,
         Alpha_fgh, V_mfgh, K_mfgh, Gamma_fgh,
         D, k_m, K_1, K, d_m, d_large, K_t,
         b_2, a_T, d_c, d_a2, b_1, d_a]
-    time = np.arange(0, 3000, 1)
-    solve = odeint(totalModel, [0, 0, 0, 0, 0, 0, 0], time, (parameters,), atol=1e-7, rtol=1e-11, full_output=100)
-    A_in, E_mRNA, FGH_mRNA, M, MazF, MazE, MazEF = solve[0][:, 0], solve[0][:, 1], solve[0][:, 2], solve[0][:, 3], \
-                                                solve[0][:, 4], solve[0][:, 5], solve[0][:, 6]
+    time = np.arange(0, 2000, 1)
 
-    with open("withE_A_in.txt","w") as f:
-        for i in A_in:
-            f.write(str(i))
-            f.write('\n')
-    with open("withE_M.txt","w") as f:
-        for i in M:
-            f.write(str(i))
-            f.write('\n')
-    with open("withE_MazF.txt","w") as f:
-        for i in MazF:
-            f.write(str(i))
-            f.write('\n')
-    plt.subplot(4, 2, 1)
+
+    solve = odeint(totalModel, [A_in, E_mRNA, FGH_mRNA, M, MazF], time, (parameters,), atol=1e-7, rtol=1e-11,
+                   full_output=1)
+    A_in, E_mRNA, FGH_mRNA, M, MazF = solve[0][:, 0], solve[0][:, 1], solve[0][:, 2], solve[0][:, 3], \
+                                      solve[0][:, 4]
+    A_in_1 = A_in.reshape(2000, 1)
+    print(A_in_1)
+    export(A_in)
+    '''
+    print(time)
+    print(A_in)
+    A_in_1=A_in.reshape(1000,1)
+    print(A_in_1)
+    
+    # print(MazF)
+    # print(M)
+    plt.subplot(3, 2, 1)
     plt.plot(time, A_in)
-    plt.subplot(4, 2, 2)
+    plt.subplot(3, 2, 2)
     plt.plot(time, E_mRNA)
-    plt.subplot(4, 2, 3)
+    plt.subplot(3, 2, 3)
     plt.plot(time, FGH_mRNA)
-    plt.subplot(4, 2, 4)
+    plt.subplot(3, 2, 4)
     plt.plot(time, M)
-    plt.subplot(4, 2, 5)
-    plt.plot(time, MazE)
-    plt.subplot(4, 2, 6)
+    plt.subplot(3, 2, 5)
     plt.plot(time, MazF)
-    plt.subplot(4, 2, 7)
-    plt.plot(time, MazEF)
-    plt.show()
-    print(1)
+    plt.subplot(3, 2, 6)
+    plt.plot(time, MazF, M)
+'''
+    # plt.plot(time, M, MazF)
+
+
+def export(x):
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('test')
+    ws.write = (1,1,x)
+    wb.save("test.xls")
+
+
+
+
+
+if '__main__':
+    exp = [-9, -8, -7, -6, -5, -4, -3]
+    for i in exp:
+        A_ex = math.pow(10, i)
+        solve(A_ex)
+        print(A_ex)
+
+
+        plt.show()
+
+    with open("douban.txt","w") as f:
+        f.write("这是个测试！")
+
+    print(2)
