@@ -20,69 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1da21d44-6b1f-4f65-a595-6ee30e300ccb" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/initial_values.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/movies/v0/evolve_BS_v0.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/movies/v0/evolve_eps_v0.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/movies/v0/evolve_no_v0.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/movies/v0/evolve_nutrition.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/movies/v0/evolve_pure.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/movies/v1/evolve.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/movies/v1/evolve_BS_multipoint.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/movies/v1/evolve_nut_multipoint.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/movies/v2/evolve_BS_directed.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/multipoint.npy" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/try3_copy.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/try4.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../expansion simulation/utils4.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/a not using/cv_data.mat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/a not using/cv_data_20%.mat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/normal and adjust cv/get_sp.m" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/normal and adjust cv/plot_cv.m" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/python version/cv_data_v0.mat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/data.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/data1.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/data2.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/data3.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/data4.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/data5.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/data6.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/data7.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/data8.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/gc.fig" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/gc.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../expansion simulation/movies/evolve_BS.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../expansion simulation/movies/evolve_nutrition.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../expansion simulation/movies/evolve_pure.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../expansion simulation/try3.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../expansion simulation/try3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../expansion simulation/utils3.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../expansion simulation/utils3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/normal and adjust cv/cv_data.mat" beforeDir="false" afterPath="$PROJECT_DIR$/normal and adjust cv/cv_data.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/normal and adjust cv/main.m" beforeDir="false" afterPath="$PROJECT_DIR$/normal and adjust cv/main.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/normal and adjust cv/mainadjust3_mulittime.asv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/optimization/main_with_eps.m" beforeDir="false" afterPath="$PROJECT_DIR$/optimization/main_with_eps.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/optimization/numerical_simulation_eps.m" beforeDir="false" afterPath="$PROJECT_DIR$/optimization/numerical_simulation_eps.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python version/cv_data.mat" beforeDir="false" afterPath="$PROJECT_DIR$/python version/cv_data.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python version/cv_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/python version/cv_processing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/DrawFigures.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/growth.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/growth_curve.m" beforeDir="false" afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/growth_curve.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/growth_curve_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/../parameters/experiments-growth/growth curve/growth_curve_2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/Back-up for Ss.lnk" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/Supplementary Material.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/Wiki-Model-draft.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/paper(bib)/Theoretical_Ecology.bibtex" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/paper(bib)/apa6.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/paper(bib)/iGem.bib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/paper(bib)/pics/XJTU.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/paper(bib)/pics/cover.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/paper(bib)/pics/online generator.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/paper(bib)/pics/xjtu.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/paper(bib)/report-fangxue-from-tex.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/paper(bib)/report-fangxue.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/paper(bib)/report.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/paper(bib)/report.tex" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../wiki/paper(bib)/settings.tex" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -174,6 +113,9 @@
       <workItem from="1605423300620" duration="741000" />
       <workItem from="1606575513352" duration="127000" />
       <workItem from="1613563181377" duration="118000" />
+      <workItem from="1615189536174" duration="1369000" />
+      <workItem from="1615293068487" duration="3098000" />
+      <workItem from="1620735472143" duration="181000" />
     </task>
     <servers />
   </component>
@@ -191,23 +133,5 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="96" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1603543828918">
-      <screen x="0" y="0" width="1280" height="680" />
-    </state>
-    <state x="96" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.680@0.0.1280.680" timestamp="1603543828918" />
-    <state x="421" y="96" key="FileChooserDialogImpl" timestamp="1603543825141">
-      <screen x="0" y="0" width="1280" height="680" />
-    </state>
-    <state x="421" y="96" key="FileChooserDialogImpl/0.0.1280.680@0.0.1280.680" timestamp="1603543825141" />
-    <state x="142" y="0" key="SettingsEditor" timestamp="1603517321876">
-      <screen x="0" y="0" width="1280" height="680" />
-    </state>
-    <state x="142" y="0" key="SettingsEditor/0.0.1280.680@0.0.1280.680" timestamp="1603517321876" />
-    <state x="303" y="1" key="search.everywhere.popup" timestamp="1603548913501">
-      <screen x="0" y="0" width="1280" height="680" />
-    </state>
-    <state x="303" y="1" key="search.everywhere.popup/0.0.1280.680@0.0.1280.680" timestamp="1603548913501" />
   </component>
 </project>

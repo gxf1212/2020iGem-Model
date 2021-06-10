@@ -124,7 +124,7 @@ beta1=0.0093;
 alpha2=10.1682;
 beta2=0.0057;
 % project enhancement
-% ratio=2;alpha1=alpha1*ratio;beta1=beta1*ratio;
+ratio=2;alpha1=alpha1*ratio;beta1=beta1*ratio;
 params=[alpha1 beta1 alpha2 beta2];
 
 %% call the function
@@ -213,3 +213,20 @@ ylabel('EPS concentration/(g\cdot L^{-1})');
 % hold on
 % plot(time, MM(Rc-(E1+E2)*0.4, Kc1, N1));
 % plot(time, (Rc-(E1+E2)*0.4)./(Kc1*N1))
+
+%%
+% title={'time/days', 'B.S concentration/(g/L)', 'nostoc concentration'};
+% data_table1=table((time/1440)', N1', N2', 'VariableNames', title);
+% writetable(data_table1, 'figure_1.csv')
+% title={'time/days', 'C concentration', 'N concentration' ,'P concentration'};
+% data_table2=table((time/1440)', Rc', Rn', Rp', 'VariableNames', title);
+% writetable(data_table1, 'figure_2_abc.csv')
+% title={'time/days', 'f_i of B.S', 'C', 'N' ,'P'};
+% data_table3=table((time/1440)', (G1./N1/r1)',MM(Rc, Kc1, N1)',MM(Rn, Kn1, N1)',MM(Rp, Kp1, N1)', 'VariableNames', title)
+% writetable(data_table3, 'figure_3_a.csv')
+% title={'time/days', 'f_i of nostoc', 'C', 'N' ,'P'};
+% data_table3=table((time/1440)',(G1./N1/r1)',MM(Rc, Kc1, N1)',MM(Rn, Kn1, N1)',MM(Rp, Kp1, N1)', 'VariableNames', title);
+% writetable(data_table3, 'figure_3_b.csv')
+title={'time/days', 'B.S', 'nostoc', 'total'};
+data_table4=table((time/1440)',E1', E2', (E1+E2)','VariableNames', title);
+writetable(data_table4, 'figure_4_b.csv')
